@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Stop-Process -Force)",
+      "Bash(del \"%LocalAppData%\\MAGNOR_POS\\magnor_pos.db\")",
+      "Bash(exit 0)",
+      "Bash(dotnet publish:*)",
+      "Bash(findstr:*)",
+      "Bash(del:*)",
+      "Bash(Remove-Item \"C:\\Users\\MarvinStarkPCs\\source\\repos\\MAGNOR_POS\\Models\\Client.cs\" -Force)",
+      "Bash(dotnet build:*)",
+      "Bash(taskkill:*)",
+      "Bash(Stop-Process -Id 4780 -Force)",
+      "Bash(dotnet run:*)",
+      "Bash(tasklist:*)",
+      "Bash(Stop-Process -Id 1764 -Force)",
+      "Bash(dotnet clean:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

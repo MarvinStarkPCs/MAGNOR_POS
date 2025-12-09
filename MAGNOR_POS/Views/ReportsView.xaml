@@ -1,0 +1,259 @@
+<UserControl x:Class="MAGNOR_POS.Views.ReportsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1200"
+             Background="#F9FAFB">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <Style x:Key="StatCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E5E7EB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+
+        <Style x:Key="StatTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="StatValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+        </Style>
+
+        <Style x:Key="StatSubtextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#9CA3AF"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
+        </Style>
+
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="Margin" Value="10,20,10,15"/>
+        </Style>
+
+        <Style x:Key="RefreshButton" TargetType="Button">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1D4ED8"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header with Refresh Button -->
+        <Border Grid.Row="0" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+            <Grid>
+                <TextBlock Text="Panel de Reportes y Estadísticas"
+                           FontSize="18" FontWeight="Bold"
+                           Foreground="#146e39"
+                           VerticalAlignment="Center"/>
+
+                <Button Content="🔄 Actualizar"
+                        Style="{StaticResource RefreshButton}"
+                        Command="{Binding RefreshCommand}"
+                        HorizontalAlignment="Right"/>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Sales Section -->
+                <TextBlock Text="📊 Ventas" Style="{StaticResource SectionTitleStyle}"/>
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Total Ventas" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding TotalSales, StringFormat=C2}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#10B981"/>
+                            <TextBlock Text="{Binding TotalSalesCount, StringFormat={}{0} transacciones}"
+                                       Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Promedio por Venta" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding AverageSaleAmount, StringFormat=C2}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#3B82F6"/>
+                            <TextBlock Text="Ticket promedio" Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Ventas del Mes" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="$0.00"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#8B5CF6"/>
+                            <TextBlock Text="Mes actual" Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Purchases Section -->
+                <TextBlock Text="🛒 Compras" Style="{StaticResource SectionTitleStyle}"/>
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Total Compras" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding TotalPurchases, StringFormat=C2}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#F59E0B"/>
+                            <TextBlock Text="{Binding TotalPurchasesCount, StringFormat={}{0} órdenes}"
+                                       Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Compras Pendientes" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding PendingPurchases, StringFormat=C2}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#EF4444"/>
+                            <TextBlock Text="Por recibir" Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Proveedores Activos" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding ActiveSuppliers}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#6366F1"/>
+                            <TextBlock Text="{Binding TotalSuppliers, StringFormat=de {0} total}"
+                                       Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Customers Section -->
+                <TextBlock Text="👥 Clientes" Style="{StaticResource SectionTitleStyle}"/>
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Total Clientes" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding TotalCustomers}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#10B981"/>
+                            <TextBlock Text="Registrados en el sistema" Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Clientes Activos" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding ActiveCustomers}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#3B82F6"/>
+                            <TextBlock Text="Con actividad reciente" Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource StatCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Saldo Crédito Total" Style="{StaticResource StatTitleStyle}"/>
+                            <TextBlock Text="{Binding TotalCreditBalance, StringFormat=C2}"
+                                       Style="{StaticResource StatValueStyle}"
+                                       Foreground="#EC4899"/>
+                            <TextBlock Text="Créditos utilizados" Style="{StaticResource StatSubtextStyle}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Quick Info Section -->
+                <TextBlock Text="ℹ️ Información General" Style="{StaticResource SectionTitleStyle}"/>
+                <Border Style="{StaticResource StatCardStyle}" Margin="10,0,10,20">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="📅 Último Reporte:"
+                                       FontSize="14" Foreground="#374151" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Column="1" Text="{Binding StatusMessage}"
+                                       FontSize="14" Foreground="#6B7280"/>
+                        </Grid>
+
+                        <TextBlock Text="Este panel muestra las estadísticas principales del sistema. Los datos se actualizan automáticamente al cargar la vista."
+                                   FontSize="13" Foreground="#9CA3AF" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Loading Indicator -->
+        <Border Grid.Row="1" Background="#80000000"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="White" CornerRadius="10" Padding="30"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="⏳" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                    <TextBlock Text="Cargando estadísticas..."
+                               FontSize="16" FontWeight="SemiBold"
+                               Foreground="#374151" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</UserControl>

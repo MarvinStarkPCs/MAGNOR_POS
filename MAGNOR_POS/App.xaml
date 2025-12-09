@@ -1,0 +1,14 @@
+﻿<Application x:Class="MAGNOR_POS.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:MAGNOR_POS"
+             xmlns:converters="clr-namespace:MAGNOR_POS.Converters"
+             StartupUri="Views/SplashScreen.xaml">
+    <Application.Resources>
+        <!-- Value Converters -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+    </Application.Resources>
+</Application>
