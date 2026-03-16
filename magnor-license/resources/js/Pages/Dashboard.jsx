@@ -105,12 +105,20 @@ export default function Dashboard({ licenses, stats, currentFilter }) {
                         <h1 className="text-xl font-bold text-blue-800 tracking-tight">
                             MAGNOR License Server
                         </h1>
-                        <button
-                            onClick={() => router.post('/logout')}
-                            className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
-                        >
-                            Cerrar Sesion
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => router.get('/backup')}
+                                className="px-4 py-2 text-sm text-gray-600 hover:text-[#146e39] hover:bg-green-50 rounded-lg transition cursor-pointer font-medium"
+                            >
+                                ☁️ Backup
+                            </button>
+                            <button
+                                onClick={() => router.post('/logout')}
+                                className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                            >
+                                Cerrar Sesion
+                            </button>
+                        </div>
                     </div>
                 </header>
 
