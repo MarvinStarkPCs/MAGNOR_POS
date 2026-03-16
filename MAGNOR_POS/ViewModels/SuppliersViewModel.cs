@@ -173,7 +173,10 @@ public class SuppliersViewModel : ViewModelBase
 
     private void AddSupplier()
     {
-        var formWindow = new SupplierFormWindow(_supplierService);
+        var formWindow = new SupplierFormWindow(_supplierService)
+        {
+            Owner = Application.Current.MainWindow
+        };
         if (formWindow.ShowDialog() == true)
         {
             StatusMessage = "Proveedor agregado exitosamente";
@@ -185,7 +188,10 @@ public class SuppliersViewModel : ViewModelBase
     {
         if (SelectedSupplier == null) return;
 
-        var formWindow = new SupplierFormWindow(_supplierService, SelectedSupplier);
+        var formWindow = new SupplierFormWindow(_supplierService, SelectedSupplier)
+        {
+            Owner = Application.Current.MainWindow
+        };
         if (formWindow.ShowDialog() == true)
         {
             StatusMessage = "Proveedor actualizado exitosamente";

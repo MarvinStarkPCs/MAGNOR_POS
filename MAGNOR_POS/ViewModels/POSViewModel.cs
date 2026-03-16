@@ -1,19 +1,32 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
+using MAGNOR_POS.Data;
 using MAGNOR_POS.Models.Inventory;
+using MAGNOR_POS.Models.Enums;
+using MAGNOR_POS.Services;
+using MAGNOR_POS.Views;
 
 namespace MAGNOR_POS.ViewModels;
 
 public class POSViewModel : ViewModelBase
 {
+    private readonly SalesService _salesService;
+    private readonly int _userId;
+
     private string _searchText = string.Empty;
     private string _selectedCategory = "Todos";
     private ObservableCollection<Product> _allProducts = new();
     private ObservableCollection<Product> _filteredProducts = new();
     private ObservableCollection<CartItem> _cartItems = new();
+    private ObservableCollection<string> _categories = new() { "Todos" };
+    private bool _isLoading;
 
-    public POSViewModel()
+    public POSViewModel(SalesService salesService, int userId)
     {
+        _salesService = salesService;
+        _userId = userId;
+
         // Initialize commands
         AddProductCommand = new RelayCommand(AddProduct, CanAddProduct);
         RemoveProductCommand = new RelayCommand(RemoveProduct);
@@ -24,9 +37,8 @@ public class POSViewModel : ViewModelBase
         ClearSearchCommand = new RelayCommand(ClearSearch);
         SelectCategoryCommand = new RelayCommand(SelectCategory);
 
-        // Load products (will be replaced with service call)
-        LoadDemoProducts();
-        ApplyFilters();
+        // Load products from database
+        _ = LoadProductsAsync();
     }
 
     // Properties
@@ -66,6 +78,18 @@ public class POSViewModel : ViewModelBase
         set => SetProperty(ref _cartItems, value);
     }
 
+    public ObservableCollection<string> Categories
+    {
+        get => _categories;
+        set => SetProperty(ref _categories, value);
+    }
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => SetProperty(ref _isLoading, value);
+    }
+
     public decimal Subtotal => CartItems.Sum(item => item.Subtotal);
     public decimal Tax => CartItems.Sum(item => item.Tax);
     public decimal Total => CartItems.Sum(item => item.Total);
@@ -80,10 +104,56 @@ public class POSViewModel : ViewModelBase
     public ICommand ClearSearchCommand { get; }
     public ICommand SelectCategoryCommand { get; }
 
-    // Command implementations
+    // --- Load from database ---
+
+    private async Task LoadProductsAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var products = await _salesService.GetActiveProductsAsync();
+            _allProducts = new ObservableCollection<Product>(products);
+
+            // Load categories
+            var cats = products
+                .Where(p => p.Category != null)
+                .Select(p => p.Category!.Name)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
+            var categoryList = new ObservableCollection<string> { "Todos" };
+            foreach (var cat in cats)
+                categoryList.Add(cat);
+
+            Categories = categoryList;
+
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al cargar productos: {ex.Message}",
+                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Reload products (call after a sale to refresh stock)
+    /// </summary>
+    public async Task RefreshProductsAsync()
+    {
+        await LoadProductsAsync();
+    }
+
+    // --- Command implementations ---
+
     private bool CanAddProduct(object? parameter)
     {
-        return parameter is Product product && product.CurrentStock > 0;
+        return parameter is Product;
     }
 
     private void AddProduct(object? parameter)
@@ -93,10 +163,25 @@ public class POSViewModel : ViewModelBase
         var existingItem = CartItems.FirstOrDefault(item => item.Product.Id == product.Id);
         if (existingItem != null)
         {
+            // Check stock before increasing
+            if (product.TrackStock && !product.AllowNegativeStock &&
+                existingItem.Quantity + 1 > product.CurrentStock)
+            {
+                MessageBox.Show($"Stock insuficiente. Disponible: {product.CurrentStock:N0}",
+                    "Stock", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             existingItem.Quantity++;
         }
         else
         {
+            if (product.TrackStock && !product.AllowNegativeStock && product.CurrentStock <= 0)
+            {
+                MessageBox.Show($"Producto sin stock disponible.",
+                    "Stock", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             CartItems.Add(new CartItem
             {
                 Product = product,
@@ -120,6 +205,15 @@ public class POSViewModel : ViewModelBase
     {
         if (parameter is CartItem cartItem)
         {
+            // Check stock
+            if (cartItem.Product.TrackStock && !cartItem.Product.AllowNegativeStock &&
+                cartItem.Quantity + 1 > cartItem.Product.CurrentStock)
+            {
+                MessageBox.Show($"Stock insuficiente. Disponible: {cartItem.Product.CurrentStock:N0}",
+                    "Stock", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             cartItem.Quantity++;
             UpdateTotals();
         }
@@ -147,14 +241,57 @@ public class POSViewModel : ViewModelBase
         return CartItems.Count > 0;
     }
 
-    private void ProcessPayment(object? parameter)
+    private async void ProcessPayment(object? parameter)
     {
-        // TODO: Implement payment dialog
-        System.Windows.MessageBox.Show(
-            $"Total a pagar: $ {Total:N0}\n\nImplementar diálogo de pago próximamente.",
-            "Procesar Pago",
-            System.Windows.MessageBoxButton.OK,
-            System.Windows.MessageBoxImage.Information);
+        if (CartItems.Count == 0) return;
+
+        // Show payment window
+        var paymentWindow = new PaymentWindow(Total)
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        var result = paymentWindow.ShowDialog();
+
+        if (result != true || !paymentWindow.PaymentConfirmed) return;
+
+        // Build sale items
+        var saleItems = CartItems.Select(ci => new SaleItem
+        {
+            ProductId = ci.Product.Id,
+            ProductName = ci.Product.Name,
+            Quantity = ci.Quantity,
+            UnitPrice = ci.Product.SalePrice,
+            TaxRate = ci.Product.TaxRate
+        }).ToList();
+
+        // Process sale
+        var (success, message, sale) = await _salesService.ProcessSaleAsync(
+            saleItems,
+            paymentWindow.SelectedPaymentType,
+            paymentWindow.AmountPaid,
+            _userId
+        );
+
+        if (success && sale != null)
+        {
+            // Show receipt window
+            var receiptWindow = new ReceiptWindow(sale)
+            {
+                Owner = Application.Current.MainWindow
+            };
+            receiptWindow.ShowDialog();
+
+            // Clear cart and refresh products
+            CartItems.Clear();
+            UpdateTotals();
+            await RefreshProductsAsync();
+        }
+        else
+        {
+            MessageBox.Show(message, "Error en la venta",
+                MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private bool CanClearCart(object? parameter)
@@ -164,13 +301,13 @@ public class POSViewModel : ViewModelBase
 
     private void ClearCart(object? parameter)
     {
-        var result = System.Windows.MessageBox.Show(
-            "¿Está seguro que desea limpiar el carrito?",
+        var result = MessageBox.Show(
+            "Esta seguro que desea limpiar el carrito?",
             "Confirmar",
-            System.Windows.MessageBoxButton.YesNo,
-            System.Windows.MessageBoxImage.Question);
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
 
-        if (result == System.Windows.MessageBoxResult.Yes)
+        if (result == MessageBoxResult.Yes)
         {
             CartItems.Clear();
             UpdateTotals();
@@ -219,134 +356,5 @@ public class POSViewModel : ViewModelBase
         OnPropertyChanged(nameof(Subtotal));
         OnPropertyChanged(nameof(Tax));
         OnPropertyChanged(nameof(Total));
-    }
-
-    private void LoadDemoProducts()
-    {
-        // Demo products (will be replaced with database service)
-        var categoryBebidas = new Category { Id = 1, Name = "Bebidas" };
-        var categoryAlimentos = new Category { Id = 2, Name = "Alimentos" };
-        var categorySnacks = new Category { Id = 3, Name = "Snacks" };
-
-        _allProducts = new ObservableCollection<Product>
-        {
-            new Product
-            {
-                Id = 1,
-                Name = "Coca Cola 500ml",
-                SKU = "BEB001",
-                Barcode = "7501234567890",
-                SalePrice = 3500m,
-                CurrentStock = 50,
-                TaxRate = 0.19m,
-                CategoryId = 1,
-                Category = categoryBebidas,
-                ImageUrl = "🥤"
-            },
-            new Product
-            {
-                Id = 2,
-                Name = "Postobon Manzana 400ml",
-                SKU = "BEB002",
-                Barcode = "7501234567891",
-                SalePrice = 2800m,
-                CurrentStock = 45,
-                TaxRate = 0.19m,
-                CategoryId = 1,
-                Category = categoryBebidas,
-                ImageUrl = "🥤"
-            },
-            new Product
-            {
-                Id = 3,
-                Name = "Agua Cristal 600ml",
-                SKU = "BEB003",
-                Barcode = "7501234567892",
-                SalePrice = 2000m,
-                CurrentStock = 100,
-                TaxRate = 0.19m,
-                CategoryId = 1,
-                Category = categoryBebidas,
-                ImageUrl = "💧"
-            },
-            new Product
-            {
-                Id = 4,
-                Name = "Sandwich de Pollo",
-                SKU = "ALI001",
-                Barcode = "7501234567893",
-                SalePrice = 8500m,
-                CurrentStock = 20,
-                TaxRate = 0.19m,
-                CategoryId = 2,
-                Category = categoryAlimentos,
-                ImageUrl = "🥪"
-            },
-            new Product
-            {
-                Id = 5,
-                Name = "Hamburguesa Clásica",
-                SKU = "ALI002",
-                Barcode = "7501234567894",
-                SalePrice = 12000m,
-                CurrentStock = 15,
-                TaxRate = 0.19m,
-                CategoryId = 2,
-                Category = categoryAlimentos,
-                ImageUrl = "🍔"
-            },
-            new Product
-            {
-                Id = 6,
-                Name = "Pizza Personal",
-                SKU = "ALI003",
-                Barcode = "7501234567895",
-                SalePrice = 15000m,
-                CurrentStock = 10,
-                TaxRate = 0.19m,
-                CategoryId = 2,
-                Category = categoryAlimentos,
-                ImageUrl = "🍕"
-            },
-            new Product
-            {
-                Id = 7,
-                Name = "Papas Margarita",
-                SKU = "SNK001",
-                Barcode = "7501234567896",
-                SalePrice = 4500m,
-                CurrentStock = 60,
-                TaxRate = 0.19m,
-                CategoryId = 3,
-                Category = categorySnacks,
-                ImageUrl = "🍟"
-            },
-            new Product
-            {
-                Id = 8,
-                Name = "Galletas Festival",
-                SKU = "SNK002",
-                Barcode = "7501234567897",
-                SalePrice = 5000m,
-                CurrentStock = 40,
-                TaxRate = 0.19m,
-                CategoryId = 3,
-                Category = categorySnacks,
-                ImageUrl = "🍪"
-            },
-            new Product
-            {
-                Id = 9,
-                Name = "Chocolate Jet",
-                SKU = "SNK003",
-                Barcode = "7501234567898",
-                SalePrice = 2500m,
-                CurrentStock = 80,
-                TaxRate = 0.19m,
-                CategoryId = 3,
-                Category = categorySnacks,
-                ImageUrl = "🍫"
-            }
-        };
     }
 }

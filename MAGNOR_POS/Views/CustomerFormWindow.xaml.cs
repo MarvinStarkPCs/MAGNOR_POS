@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using MAGNOR_POS.Models.Enums;
 using MAGNOR_POS.Models.Parties;
 using MAGNOR_POS.Services;
@@ -28,6 +29,15 @@ public partial class CustomerFormWindow : Window
             HeaderText.Text = "Editar Cliente";
             LoadCustomerData(_editingCustomer);
         }
+
+        // Allow dragging
+        MouseLeftButtonDown += (s, e) =>
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        };
+
+        Loaded += (s, e) => FullNameTextBox.Focus();
     }
 
     private void LoadCustomerData(Customer customer)

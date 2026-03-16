@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BackupViewController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,4 +18,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/licenses/{id}/renew', [DashboardController::class, 'renew'])->name('licenses.renew');
     Route::delete('/licenses/{id}', [DashboardController::class, 'destroy'])->name('licenses.destroy');
     Route::post('/logout', [DashboardController::class, 'logout'])->name('logout');
+    Route::get('/backup', [BackupViewController::class, 'index'])->name('backup.index');
 });

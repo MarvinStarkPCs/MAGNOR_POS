@@ -100,38 +100,49 @@ namespace MAGNOR_POS.Services
                     hardware_id = hardwareId
                 });
 
-                var request = new HttpRequestMessage(HttpMethod.Post, $"{API_BASE_URL}/activate.php")
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{API_BASE_URL}/activate")
                 {
                     Content = new StringContent(payload, Encoding.UTF8, "application/json")
                 };
                 request.Headers.Add("X-Api-Secret", API_SECRET);
+                request.Headers.Add("Accept", "application/json");
 
                 var response = await _httpClient.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<JsonElement>(json);
 
                 bool success = result.GetProperty("success").GetBoolean();
-                string message = result.GetProperty("message").GetString() ?? "";
+                string message = result.TryGetProperty("message", out var msgEl)
+                    ? msgEl.GetString() ?? ""
+                    : "Licencia activada exitosamente";
 
                 if (success)
                 {
                     // Leer fecha de expiración del servidor
                     DateTime? expiresAt = null;
-                    if (result.TryGetProperty("license", out var licData) &&
-                        licData.TryGetProperty("expires_at", out var expiresEl) &&
-                        expiresEl.ValueKind == JsonValueKind.String)
+                    string customer = "";
+
+                    if (result.TryGetProperty("license", out var licData))
                     {
-                        if (DateTime.TryParse(expiresEl.GetString(), out var parsed))
-                            expiresAt = parsed;
+                        if (licData.TryGetProperty("expires_at", out var expiresEl) &&
+                            expiresEl.ValueKind == JsonValueKind.String)
+                        {
+                            if (DateTime.TryParse(expiresEl.GetString(), out var parsed))
+                                expiresAt = parsed;
+                        }
+
+                        if (licData.TryGetProperty("customer", out var custEl) &&
+                            custEl.ValueKind == JsonValueKind.String)
+                        {
+                            customer = custEl.GetString() ?? "";
+                        }
                     }
 
                     var licenseInfo = new LicenseInfo
                     {
                         LicenseKey = licenseKey.Trim().ToUpperInvariant(),
                         HardwareId = hardwareId,
-                        Customer = licData.ValueKind != JsonValueKind.Undefined
-                            ? licData.GetProperty("customer").GetString() ?? ""
-                            : "",
+                        Customer = customer,
                         ActivatedAt = DateTime.Now,
                         ExpiresAt = expiresAt,
                         LastValidated = DateTime.Now
@@ -182,20 +193,25 @@ namespace MAGNOR_POS.Services
                     hardware_id = localLicense.HardwareId
                 });
 
-                var request = new HttpRequestMessage(HttpMethod.Post, $"{API_BASE_URL}/validate.php")
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{API_BASE_URL}/validate")
                 {
                     Content = new StringContent(payload, Encoding.UTF8, "application/json")
                 };
                 request.Headers.Add("X-Api-Secret", API_SECRET);
+                request.Headers.Add("Accept", "application/json");
 
                 var response = await _httpClient.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<JsonElement>(json);
 
                 bool success = result.GetProperty("success").GetBoolean();
-                string message = result.GetProperty("message").GetString() ?? "";
+                // Laravel devuelve "valid" para indicar si la licencia sigue vigente
+                bool valid = result.TryGetProperty("valid", out var validEl) && validEl.GetBoolean();
+                string message = result.TryGetProperty("message", out var msgEl)
+                    ? msgEl.GetString() ?? ""
+                    : "";
 
-                if (success)
+                if (success && valid)
                 {
                     // Actualizar fecha de última validación y expiración del servidor
                     localLicense.LastValidated = DateTime.Now;
@@ -223,7 +239,7 @@ namespace MAGNOR_POS.Services
                 {
                     // Licencia rechazada por el servidor -> eliminar local
                     DeleteLicenseLocal();
-                    return (false, message);
+                    return (false, string.IsNullOrEmpty(message) ? "Licencia no válida" : message);
                 }
             }
             catch (Exception)

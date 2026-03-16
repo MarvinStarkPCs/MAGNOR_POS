@@ -1,0 +1,198 @@
+<UserControl x:Class="MAGNOR_POS.Views.BackupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+
+                <!-- Status Card -->
+                <Border Background="#F5F9F6" BorderBrush="#146e39" BorderThickness="1"
+                        CornerRadius="12" Padding="25" Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Estado del Backup" FontSize="18" FontWeight="Bold" Foreground="#146e39"/>
+                            <TextBlock x:Name="TxtLastSync" Text="Ultimo backup: Nunca"
+                                       FontSize="13" Foreground="#666666" Margin="0,5,0,0"/>
+                            <TextBlock x:Name="TxtLicenseKey" Text=""
+                                       FontSize="12" Foreground="#999999" Margin="0,3,0,0"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <Button x:Name="BtnSync" Content="SINCRONIZAR AHORA"
+                                    Height="48" Padding="25,0"
+                                    Background="#146e39" Foreground="White"
+                                    BorderThickness="0" FontSize="14" FontWeight="Bold"
+                                    Cursor="Hand" Click="BtnSync_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="10"
+                                                            Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#0d5028"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Background" Value="#AAAAAA"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button x:Name="BtnCheckStatus" Content="Verificar estado"
+                                    Height="35" Padding="15,0" Margin="0,8,0,0"
+                                    Background="#E0E0E0" Foreground="#333333"
+                                    BorderThickness="0" FontSize="12" FontWeight="SemiBold"
+                                    Cursor="Hand" Click="BtnCheckStatus_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="8"
+                                                            Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#BDBDBD"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Progress -->
+                <Border x:Name="ProgressPanel" Visibility="Collapsed"
+                        Background="#FFF8E1" BorderBrush="#FFB300" BorderThickness="1"
+                        CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock x:Name="TxtProgress" Text="Sincronizando datos..."
+                                   FontSize="14" FontWeight="SemiBold" Foreground="#F57F17"/>
+                        <ProgressBar x:Name="ProgressBar" IsIndeterminate="True"
+                                     Height="4" Margin="0,10,0,0"
+                                     Foreground="#FFB300" Background="#FFF3C4"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Result Message -->
+                <Border x:Name="ResultPanel" Visibility="Collapsed"
+                        CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                    <TextBlock x:Name="TxtResult" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Stats Cards -->
+                <TextBlock Text="Registros en el servidor" FontSize="16" FontWeight="Bold"
+                           Foreground="#333333" Margin="0,0,0,15"/>
+
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Customers -->
+                    <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="15"
+                            BorderBrush="#E0E0E0" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="👤" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtCustomers" Text="0" FontSize="24" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Foreground="#146e39" Margin="0,5,0,0"/>
+                            <TextBlock Text="Clientes" FontSize="12" Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Products -->
+                    <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="15"
+                            BorderBrush="#E0E0E0" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="📦" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtProducts" Text="0" FontSize="24" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Foreground="#146e39" Margin="0,5,0,0"/>
+                            <TextBlock Text="Productos" FontSize="12" Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Sales -->
+                    <Border Grid.Column="4" Background="White" CornerRadius="10" Padding="15"
+                            BorderBrush="#E0E0E0" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🧾" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtSales" Text="0" FontSize="24" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Foreground="#146e39" Margin="0,5,0,0"/>
+                            <TextBlock Text="Ventas" FontSize="12" Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Suppliers -->
+                    <Border Grid.Column="6" Background="White" CornerRadius="10" Padding="15"
+                            BorderBrush="#E0E0E0" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🏢" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtSuppliers" Text="0" FontSize="24" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Foreground="#146e39" Margin="0,5,0,0"/>
+                            <TextBlock Text="Proveedores" FontSize="12" Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Purchases -->
+                    <Border Grid.Column="8" Background="White" CornerRadius="10" Padding="15"
+                            BorderBrush="#E0E0E0" BorderThickness="1">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="📋" FontSize="28" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TxtPurchases" Text="0" FontSize="24" FontWeight="Bold"
+                                       HorizontalAlignment="Center" Foreground="#146e39" Margin="0,5,0,0"/>
+                            <TextBlock Text="Compras" FontSize="12" Foreground="#666666"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Info -->
+                <Border Background="#F0F4FF" BorderBrush="#5B8DEF" BorderThickness="1"
+                        CornerRadius="10" Padding="20">
+                    <StackPanel>
+                        <TextBlock FontSize="14" FontWeight="SemiBold" Foreground="#1E40AF"
+                                   Text="Consulta tus datos en la web"/>
+                        <TextBlock FontSize="13" Foreground="#3B5998" Margin="0,5,0,0" TextWrapping="Wrap">
+                            <Run Text="Accede a "/>
+                            <Run Text="magnorposlicence.northcloud.com.co" FontWeight="SemiBold"/>
+                            <Run Text=" para ver tus datos de backup desde cualquier navegador. Inicia sesion con tu cuenta de administrador."/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

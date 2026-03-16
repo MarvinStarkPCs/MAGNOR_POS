@@ -658,7 +658,315 @@
             </StackPanel>
         </Border>
 
-        <!-- Add/Edit Form (previous implementation remains the same but truncated here for space) -->
-        <!-- You can keep the existing form from the previous implementation -->
+        <!-- Add/Edit Form -->
+        <Border Visibility="{Binding IsAddEditVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Background="White" Padding="20">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel MaxWidth="600" HorizontalAlignment="Center">
+
+                    <!-- Form Header -->
+                    <TextBlock Text="{Binding EditMode}"
+                               FontSize="22" FontWeight="Bold"
+                               Foreground="#146e39" Margin="0,0,0,20"/>
+
+                    <!-- Emoji/Icon -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Icono del producto" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding FormImageUrl, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="32" Height="55" TextAlignment="Center"
+                                 VerticalContentAlignment="Center"
+                                 BorderBrush="#D0D0D0" BorderThickness="1.5" Padding="10,0">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                    <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </StackPanel>
+
+                    <!-- Name -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Nombre *" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding FormName, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="14" Height="42" Padding="12,0"
+                                 VerticalContentAlignment="Center"
+                                 BorderBrush="#D0D0D0" BorderThickness="1.5">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                    <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </StackPanel>
+
+                    <!-- Description -->
+                    <StackPanel Margin="0,0,0,15">
+                        <TextBlock Text="Descripcion" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding FormDescription, UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="14" Height="60" Padding="12,8"
+                                 TextWrapping="Wrap" AcceptsReturn="True"
+                                 BorderBrush="#D0D0D0" BorderThickness="1.5">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                    <ScrollViewer x:Name="PART_ContentHost"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </StackPanel>
+
+                    <!-- SKU and Barcode row -->
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="SKU *" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding FormSKU, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Height="42" Padding="12,0"
+                                     VerticalContentAlignment="Center"
+                                     BorderBrush="#D0D0D0" BorderThickness="1.5">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Codigo de Barras" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding FormBarcode, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Height="42" Padding="12,0"
+                                     VerticalContentAlignment="Center"
+                                     BorderBrush="#D0D0D0" BorderThickness="1.5">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Prices row -->
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Precio de Venta *" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding FormSalePrice, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Height="42" Padding="12,0"
+                                     VerticalContentAlignment="Center"
+                                     BorderBrush="#D0D0D0" BorderThickness="1.5">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Precio de Compra" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding FormPurchasePrice, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Height="42" Padding="12,0"
+                                     VerticalContentAlignment="Center"
+                                     BorderBrush="#D0D0D0" BorderThickness="1.5">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Stock row -->
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Stock Actual" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding FormCurrentStock, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Height="42" Padding="12,0"
+                                     VerticalContentAlignment="Center"
+                                     BorderBrush="#D0D0D0" BorderThickness="1.5">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Stock Minimo" FontSize="13" Foreground="#666666" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding FormMinStock, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Height="42" Padding="12,0"
+                                     VerticalContentAlignment="Center"
+                                     BorderBrush="#D0D0D0" BorderThickness="1.5">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="TextBox">
+                                                    <Border Background="White" BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                                        <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Buttons -->
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Content="Cancelar"
+                                Height="45"
+                                Background="#E0E0E0" Foreground="#333333"
+                                BorderThickness="0" FontSize="15" FontWeight="SemiBold"
+                                Cursor="Hand" Command="{Binding CancelCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#BDBDBD"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Button Grid.Column="2" Content="Guardar"
+                                Height="45"
+                                Background="#146e39" Foreground="White"
+                                BorderThickness="0" FontSize="15" FontWeight="Bold"
+                                Cursor="Hand" Command="{Binding SaveCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#0d5028"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </UserControl>

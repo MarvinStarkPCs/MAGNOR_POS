@@ -180,7 +180,10 @@ public class PurchasesViewModel : ViewModelBase
     {
         try
         {
-            var formWindow = new PurchaseFormWindow(_purchaseService, _currentUserId);
+            var formWindow = new PurchaseFormWindow(_purchaseService, _currentUserId)
+            {
+                Owner = Application.Current.MainWindow
+            };
             if (formWindow.ShowDialog() == true)
             {
                 StatusMessage = "Compra registrada exitosamente";
@@ -197,7 +200,10 @@ public class PurchasesViewModel : ViewModelBase
     {
         if (SelectedPurchase == null) return;
 
-        var formWindow = new PurchaseFormWindow(_purchaseService, _currentUserId, SelectedPurchase);
+        var formWindow = new PurchaseFormWindow(_purchaseService, _currentUserId, SelectedPurchase)
+        {
+            Owner = Application.Current.MainWindow
+        };
         formWindow.ShowDialog();
     }
 

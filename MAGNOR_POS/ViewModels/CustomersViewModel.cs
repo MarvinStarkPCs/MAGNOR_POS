@@ -173,7 +173,10 @@ public class CustomersViewModel : ViewModelBase
 
     private void AddCustomer()
     {
-        var formWindow = new CustomerFormWindow(_customerService);
+        var formWindow = new CustomerFormWindow(_customerService)
+        {
+            Owner = Application.Current.MainWindow
+        };
         if (formWindow.ShowDialog() == true)
         {
             StatusMessage = "Cliente agregado exitosamente";
@@ -185,7 +188,10 @@ public class CustomersViewModel : ViewModelBase
     {
         if (SelectedCustomer == null) return;
 
-        var formWindow = new CustomerFormWindow(_customerService, SelectedCustomer);
+        var formWindow = new CustomerFormWindow(_customerService, SelectedCustomer)
+        {
+            Owner = Application.Current.MainWindow
+        };
         if (formWindow.ShowDialog() == true)
         {
             StatusMessage = "Cliente actualizado exitosamente";

@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using MAGNOR_POS.Models.Enums;
 using MAGNOR_POS.Models.Parties;
 using MAGNOR_POS.Services;
@@ -28,6 +29,15 @@ public partial class SupplierFormWindow : Window
             HeaderText.Text = "Editar Proveedor";
             LoadSupplierData(_editingSupplier);
         }
+
+        // Allow dragging
+        MouseLeftButtonDown += (s, e) =>
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        };
+
+        Loaded += (s, e) => CompanyNameTextBox.Focus();
     }
 
     private void LoadSupplierData(Supplier supplier)

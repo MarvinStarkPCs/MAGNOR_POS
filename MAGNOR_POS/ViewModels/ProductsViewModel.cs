@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using MAGNOR_POS.Data;
 using MAGNOR_POS.Models.Inventory;
 using MAGNOR_POS.Services;
+using MAGNOR_POS.Views;
 
 namespace MAGNOR_POS.ViewModels;
 
@@ -43,8 +45,8 @@ public class ProductsViewModel : ViewModelBase
         // Initialize commands
         SearchCommand = new RelayCommand(_ => ApplyFilters());
         ClearSearchCommand = new RelayCommand(_ => { SearchText = string.Empty; });
-        AddNewCommand = new RelayCommand(_ => ShowAddForm());
-        EditCommand = new RelayCommand(ShowEditForm, CanEditOrDelete);
+        AddNewCommand = new RelayCommand(_ => ShowAddFormModal());
+        EditCommand = new RelayCommand(_ => ShowEditFormModal(), CanEditOrDelete);
         DeleteCommand = new RelayCommand(async _ => await DeleteProductAsync(), CanEditOrDelete);
         SaveCommand = new RelayCommand(async _ => await SaveProductAsync());
         CancelCommand = new RelayCommand(_ => HideAddEditForm());
@@ -151,6 +153,34 @@ public class ProductsViewModel : ViewModelBase
         return SelectedProduct != null;
     }
 
+    private void ShowAddFormModal()
+    {
+        var formWindow = new ProductFormWindow(_productService, _currentUserId)
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        if (formWindow.ShowDialog() == true && formWindow.ProductSaved)
+        {
+            _ = LoadProductsAsync();
+        }
+    }
+
+    private void ShowEditFormModal()
+    {
+        if (SelectedProduct == null) return;
+
+        var formWindow = new ProductFormWindow(_productService, _currentUserId, SelectedProduct)
+        {
+            Owner = Application.Current.MainWindow
+        };
+
+        if (formWindow.ShowDialog() == true && formWindow.ProductSaved)
+        {
+            _ = LoadProductsAsync();
+        }
+    }
+
     private void ShowAddForm()
     {
         EditMode = "Agregar Producto";
@@ -161,19 +191,7 @@ public class ProductsViewModel : ViewModelBase
     private void ShowEditForm(object? parameter)
     {
         if (SelectedProduct == null) return;
-
-        EditMode = "Editar Producto";
-        FormName = SelectedProduct.Name;
-        FormDescription = SelectedProduct.Description ?? string.Empty;
-        FormSKU = SelectedProduct.SKU;
-        FormBarcode = SelectedProduct.Barcode ?? string.Empty;
-        FormSalePrice = SelectedProduct.SalePrice.ToString("N0");
-        FormPurchasePrice = SelectedProduct.PurchasePrice.ToString("N0");
-        FormCurrentStock = SelectedProduct.CurrentStock.ToString();
-        FormMinStock = SelectedProduct.MinimumStock.ToString();
-        FormImageUrl = SelectedProduct.ImageUrl ?? "📦";
-
-        IsAddEditVisible = true;
+        ShowEditFormModal();
     }
 
     private async Task DeleteProductAsync()

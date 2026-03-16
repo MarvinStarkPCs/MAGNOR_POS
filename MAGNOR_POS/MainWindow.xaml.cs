@@ -69,6 +69,12 @@ namespace MAGNOR_POS
             UpdateMenuSelection(BtnUsers);
         }
 
+        private void BtnBackup_Click(object sender, RoutedEventArgs e)
+        {
+            LoadBackupView();
+            UpdateMenuSelection(BtnBackup);
+        }
+
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
             LoadSettingsView();
@@ -78,8 +84,21 @@ namespace MAGNOR_POS
         private void LoadPOSView()
         {
             TitleText.Text = "Punto de Venta";
-            SubtitleText.Text = "Realiza ventas rápidas y gestiona el carrito de compra";
-            MainContent.Content = new POSView();
+            SubtitleText.Text = "Realiza ventas rapidas y gestiona el carrito de compra";
+
+            // Create database context and service
+            var context = new AppDbContext();
+            var salesService = new SalesService(context);
+
+            // Create ViewModel with service - using userId 1 (admin) as placeholder
+            var viewModel = new POSViewModel(salesService, 1);
+
+            var posView = new POSView
+            {
+                DataContext = viewModel
+            };
+
+            MainContent.Content = posView;
         }
 
         private void LoadProductsView()
@@ -196,6 +215,15 @@ namespace MAGNOR_POS
             MainContent.Content = usersView;
         }
 
+        private void LoadBackupView()
+        {
+            TitleText.Text = "Backup en la Nube";
+            SubtitleText.Text = "Sincroniza tus datos con el servidor para respaldo y consulta web";
+
+            var backupView = new BackupView();
+            MainContent.Content = backupView;
+        }
+
         private void LoadSettingsView()
         {
             TitleText.Text = "Configuración del Sistema";
@@ -223,6 +251,7 @@ namespace MAGNOR_POS
             BtnSuppliers.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
             BtnReports.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
             BtnUsers.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
+            BtnBackup.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
             BtnSettings.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
 
             // Highlight selected button

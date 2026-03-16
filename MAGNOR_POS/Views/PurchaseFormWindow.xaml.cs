@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using MAGNOR_POS.Models.Inventory;
 using MAGNOR_POS.Models.Parties;
 using MAGNOR_POS.Models.Purchases;
@@ -45,6 +46,13 @@ public partial class PurchaseFormWindow : Window
         {
             HeaderText.Text = "Editar Orden de Compra";
         }
+
+        // Allow dragging
+        MouseLeftButtonDown += (s, e) =>
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
+        };
 
         // Load data after window is loaded
         Loaded += async (s, e) => await LoadDataAsync();

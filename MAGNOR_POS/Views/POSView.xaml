@@ -99,159 +99,54 @@
                 </Grid>
             </Border>
 
-            <!-- Categories -->
+            <!-- Categories (dynamic from database) -->
             <ScrollViewer Grid.Row="1"
                           HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Disabled"
                           Margin="0,0,0,15">
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Todos"
-                            Height="35"
-                            Padding="20,0"
-                            BorderThickness="0"
-                            FontSize="13"
-                            Margin="0,0,8,0"
-                            Cursor="Hand"
-                            Command="{Binding SelectCategoryCommand}"
-                            CommandParameter="Todos">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                                <Setter Property="Foreground" Value="#333333"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="8">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedCategory}" Value="Todos">
-                                        <Setter Property="Background" Value="#146e39"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#D0D0D0"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-
-                    <Button Content="Bebidas"
-                            Height="35"
-                            Padding="20,0"
-                            BorderThickness="0"
-                            FontSize="13"
-                            Margin="0,0,8,0"
-                            Cursor="Hand"
-                            Command="{Binding SelectCategoryCommand}"
-                            CommandParameter="Bebidas">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                                <Setter Property="Foreground" Value="#333333"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="8">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedCategory}" Value="Bebidas">
-                                        <Setter Property="Background" Value="#146e39"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#D0D0D0"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-
-                    <Button Content="Alimentos"
-                            Height="35"
-                            Padding="20,0"
-                            BorderThickness="0"
-                            FontSize="13"
-                            Margin="0,0,8,0"
-                            Cursor="Hand"
-                            Command="{Binding SelectCategoryCommand}"
-                            CommandParameter="Alimentos">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                                <Setter Property="Foreground" Value="#333333"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="8">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedCategory}" Value="Alimentos">
-                                        <Setter Property="Background" Value="#146e39"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#D0D0D0"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-
-                    <Button Content="Snacks"
-                            Height="35"
-                            Padding="20,0"
-                            BorderThickness="0"
-                            FontSize="13"
-                            Cursor="Hand"
-                            Command="{Binding SelectCategoryCommand}"
-                            CommandParameter="Snacks">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="#E0E0E0"/>
-                                <Setter Property="Foreground" Value="#333333"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}"
-                                                    CornerRadius="8">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SelectedCategory}" Value="Snacks">
-                                        <Setter Property="Background" Value="#146e39"/>
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </DataTrigger>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#D0D0D0"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </StackPanel>
+                <ItemsControl ItemsSource="{Binding Categories}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding}"
+                                    Height="35"
+                                    Padding="20,0"
+                                    BorderThickness="0"
+                                    FontSize="13"
+                                    Margin="0,0,8,0"
+                                    Cursor="Hand"
+                                    Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#E0E0E0"/>
+                                        <Setter Property="Foreground" Value="#333333"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}"
+                                                            CornerRadius="8">
+                                                        <ContentPresenter HorizontalAlignment="Center"
+                                                                        VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#D0D0D0"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
 
             <!-- Products Grid -->
