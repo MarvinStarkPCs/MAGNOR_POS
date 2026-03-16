@@ -6,9 +6,9 @@
 
 // --- Configuración de Base de Datos ---
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'magnor_licenses');  // Cambiar al nombre de tu BD en cPanel
-define('DB_USER', 'root');             // Cambiar al usuario de tu BD en cPanel
-define('DB_PASS', '');                 // Cambiar a la contraseña de tu BD en cPanel
+define('DB_NAME', 'progr108_magnor_pos_licence');  // Cambiar al nombre de tu BD en cPanel
+define('DB_USER', 'progr108_magnor_pos_licence');             // Cambiar al usuario de tu BD en cPanel
+define('DB_PASS', '{1^}VJCP?Y$c');                 // Cambiar a la contraseña de tu BD en cPanel
 
 // --- Clave secreta para autenticar requests de la app ---
 define('API_SECRET', 'CAMBIAR_ESTA_CLAVE_SECRETA_AQUI');
