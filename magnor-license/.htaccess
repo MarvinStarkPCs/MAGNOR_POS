@@ -1,0 +1,14 @@
+# Proteger archivos sensibles
+<Files "config.php">
+    Require all denied
+</Files>
+
+<Files "install.php">
+    Require all denied
+</Files>
+
+# Headers de seguridad
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+</IfModule>
