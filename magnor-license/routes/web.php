@@ -2,7 +2,16 @@
 
 use App\Http\Controllers\BackupViewController;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+
+// Temporal: regenerar autoload (visitar una vez y luego borrar)
+Route::get('/fix-autoload', function () {
+    Artisan::call('optimize:clear');
+    // Regenerar las clases cacheadas
+    Artisan::call('package:discover');
+    return 'Autoload regenerado. Ya puedes borrar esta ruta.';
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/', fn() => redirect('/login'));

@@ -28,7 +28,8 @@
       "Bash(php artisan:*)",
       "Bash(npm install:*)",
       "Bash(npx vite:*)",
-      "Bash(composer install:*)"
+      "Bash(composer install:*)",
+      "Bash(ls \"C:\\\\Users\\\\MarvinStarkPCs\\\\source\\\\repos\\\\MAGNOR_POS\\\\magnor-license\\\\app\\\\Models\\\\Backup\"\" 2>/dev/null || echo \"Directory not found \")"
     ],
     "deny": [],
     "ask": []

@@ -256,6 +256,8 @@ Generated_Code/
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
+!magnor-license/app/Models/Backup/
+!magnor-license/app/Models/Backup/*
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/

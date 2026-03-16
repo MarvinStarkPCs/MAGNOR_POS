@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Models\Backup;
+
+use Illuminate\Database\Eloquent\Model;
+
+class BackupPurchase extends Model
+{
+    protected $fillable = [
+        'license_key',
+        'purchase_number',
+        'supplier_name',
+        'subtotal',
+        'tax_amount',
+        'discount_amount',
+        'total',
+        'status',
+        'purchase_date',
+        'notes',
+        'local_id',
+        'synced_at',
+    ];
+
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'total' => 'decimal:2',
+        'purchase_date' => 'datetime',
+        'local_id' => 'integer',
+        'synced_at' => 'datetime',
+    ];
+}
