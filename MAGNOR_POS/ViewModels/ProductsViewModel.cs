@@ -1,11 +1,16 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using MAGNOR_POS.Data;
 using MAGNOR_POS.Models.Inventory;
+using MAGNOR_POS.Services;
 
 namespace MAGNOR_POS.ViewModels;
 
 public class ProductsViewModel : ViewModelBase
 {
+    private readonly ProductService _productService;
+    private readonly int _currentUserId = 1; // TODO: Get from session
+
     private string _searchText = string.Empty;
     private string _selectedFilter = "Todos";
     private ObservableCollection<Product> _allProducts = new();
@@ -31,22 +36,25 @@ public class ProductsViewModel : ViewModelBase
 
     public ProductsViewModel()
     {
+        // Initialize service
+        var context = new AppDbContext();
+        _productService = new ProductService(context);
+
         // Initialize commands
         SearchCommand = new RelayCommand(_ => ApplyFilters());
         ClearSearchCommand = new RelayCommand(_ => { SearchText = string.Empty; });
         AddNewCommand = new RelayCommand(_ => ShowAddForm());
         EditCommand = new RelayCommand(ShowEditForm, CanEditOrDelete);
-        DeleteCommand = new RelayCommand(DeleteProduct, CanEditOrDelete);
-        SaveCommand = new RelayCommand(_ => SaveProduct());
+        DeleteCommand = new RelayCommand(async _ => await DeleteProductAsync(), CanEditOrDelete);
+        SaveCommand = new RelayCommand(async _ => await SaveProductAsync());
         CancelCommand = new RelayCommand(_ => HideAddEditForm());
         AdjustStockCommand = new RelayCommand(ShowStockAdjustment, CanEditOrDelete);
-        SaveStockAdjustmentCommand = new RelayCommand(_ => SaveStockAdjustment());
+        SaveStockAdjustmentCommand = new RelayCommand(async _ => await SaveStockAdjustmentAsync());
         CancelStockAdjustmentCommand = new RelayCommand(_ => HideStockAdjustment());
         FilterCommand = new RelayCommand(ApplyFilterType);
 
-        // Load products
-        LoadDemoProducts();
-        ApplyFilters();
+        // Load products from database
+        _ = LoadProductsAsync();
     }
 
     // Properties
@@ -168,7 +176,7 @@ public class ProductsViewModel : ViewModelBase
         IsAddEditVisible = true;
     }
 
-    private void DeleteProduct(object? parameter)
+    private async Task DeleteProductAsync()
     {
         if (SelectedProduct == null) return;
 
@@ -180,17 +188,21 @@ public class ProductsViewModel : ViewModelBase
 
         if (result == System.Windows.MessageBoxResult.Yes)
         {
-            _allProducts.Remove(SelectedProduct);
-            ApplyFilters();
-            System.Windows.MessageBox.Show(
-                "Producto eliminado correctamente.",
-                "Éxito",
-                System.Windows.MessageBoxButton.OK,
-                System.Windows.MessageBoxImage.Information);
+            var (success, message) = await _productService.DeleteProductAsync(SelectedProduct.Id, _currentUserId);
+
+            if (success)
+            {
+                await LoadProductsAsync();
+                System.Windows.MessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+            else
+            {
+                System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
     }
 
-    private void SaveProduct()
+    private async Task SaveProductAsync()
     {
         // Validate
         if (string.IsNullOrWhiteSpace(FormName) || string.IsNullOrWhiteSpace(FormSKU))
@@ -230,23 +242,31 @@ public class ProductsViewModel : ViewModelBase
             // Add new product
             var newProduct = new Product
             {
-                Id = _allProducts.Count > 0 ? _allProducts.Max(p => p.Id) + 1 : 1,
                 Name = FormName,
-                Description = FormDescription,
+                Description = string.IsNullOrWhiteSpace(FormDescription) ? null : FormDescription,
                 SKU = FormSKU,
-                Barcode = FormBarcode,
+                Barcode = string.IsNullOrWhiteSpace(FormBarcode) ? null : FormBarcode,
                 SalePrice = salePrice,
                 PurchasePrice = purchasePrice,
                 CurrentStock = currentStock,
                 MinimumStock = minStock,
                 TaxRate = 0.19m,
                 ImageUrl = FormImageUrl,
-                CategoryId = 1,
-                Category = new Category { Id = 1, Name = "General" }
+                CategoryId = 1 // Default category - TODO: Get from category selection
             };
 
-            _allProducts.Add(newProduct);
-            System.Windows.MessageBox.Show("Producto agregado correctamente.", "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            var (success, message, _) = await _productService.AddProductAsync(newProduct, _currentUserId);
+
+            if (success)
+            {
+                await LoadProductsAsync();
+                System.Windows.MessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                HideAddEditForm();
+            }
+            else
+            {
+                System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
         else
         {
@@ -254,21 +274,29 @@ public class ProductsViewModel : ViewModelBase
             if (SelectedProduct != null)
             {
                 SelectedProduct.Name = FormName;
-                SelectedProduct.Description = FormDescription;
+                SelectedProduct.Description = string.IsNullOrWhiteSpace(FormDescription) ? null : FormDescription;
                 SelectedProduct.SKU = FormSKU;
-                SelectedProduct.Barcode = FormBarcode;
+                SelectedProduct.Barcode = string.IsNullOrWhiteSpace(FormBarcode) ? null : FormBarcode;
                 SelectedProduct.SalePrice = salePrice;
                 SelectedProduct.PurchasePrice = purchasePrice;
                 SelectedProduct.CurrentStock = currentStock;
                 SelectedProduct.MinimumStock = minStock;
                 SelectedProduct.ImageUrl = FormImageUrl;
 
-                System.Windows.MessageBox.Show("Producto actualizado correctamente.", "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                var (success, message) = await _productService.UpdateProductAsync(SelectedProduct, _currentUserId);
+
+                if (success)
+                {
+                    await LoadProductsAsync();
+                    System.Windows.MessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    HideAddEditForm();
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
             }
         }
-
-        ApplyFilters();
-        HideAddEditForm();
     }
 
     private void HideAddEditForm()
@@ -343,7 +371,7 @@ public class ProductsViewModel : ViewModelBase
         StockReason = string.Empty;
     }
 
-    private void SaveStockAdjustment()
+    private async Task SaveStockAdjustmentAsync()
     {
         if (SelectedProduct == null) return;
 
@@ -353,9 +381,10 @@ public class ProductsViewModel : ViewModelBase
             return;
         }
 
+        decimal newStock;
         if (StockAdjustmentType == "Entrada")
         {
-            SelectedProduct.CurrentStock += quantity;
+            newStock = SelectedProduct.CurrentStock + quantity;
         }
         else // Salida
         {
@@ -364,17 +393,25 @@ public class ProductsViewModel : ViewModelBase
                 System.Windows.MessageBox.Show("No hay suficiente stock disponible.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 return;
             }
-            SelectedProduct.CurrentStock -= quantity;
+            newStock = SelectedProduct.CurrentStock - quantity;
         }
 
-        System.Windows.MessageBox.Show(
-            $"{StockAdjustmentType} de {quantity} unidades registrada correctamente.\nStock actual: {SelectedProduct.CurrentStock}",
-            "Éxito",
-            System.Windows.MessageBoxButton.OK,
-            System.Windows.MessageBoxImage.Information);
+        var (success, message) = await _productService.UpdateStockAsync(SelectedProduct.Id, newStock, _currentUserId);
 
-        ApplyFilters();
-        HideStockAdjustment();
+        if (success)
+        {
+            await LoadProductsAsync();
+            System.Windows.MessageBox.Show(
+                $"{StockAdjustmentType} de {quantity} unidades registrada correctamente.\nStock actual: {newStock}",
+                "Éxito",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Information);
+            HideStockAdjustment();
+        }
+        else
+        {
+            System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+        }
     }
 
     private void UpdateStats()
@@ -384,23 +421,21 @@ public class ProductsViewModel : ViewModelBase
         OnPropertyChanged(nameof(TotalInventoryValue));
     }
 
-    private void LoadDemoProducts()
+    private async Task LoadProductsAsync()
     {
-        var categoryBebidas = new Category { Id = 1, Name = "Bebidas" };
-        var categoryAlimentos = new Category { Id = 2, Name = "Alimentos" };
-        var categorySnacks = new Category { Id = 3, Name = "Snacks" };
-
-        _allProducts = new ObservableCollection<Product>
+        try
         {
-            new Product { Id = 1, Name = "Coca Cola 500ml", SKU = "BEB001", Barcode = "7501234567890", SalePrice = 3500m, PurchasePrice = 2000m, CurrentStock = 50, MinimumStock = 10, TaxRate = 0.19m, CategoryId = 1, Category = categoryBebidas, ImageUrl = "🥤" },
-            new Product { Id = 2, Name = "Postobon Manzana 400ml", SKU = "BEB002", Barcode = "7501234567891", SalePrice = 2800m, PurchasePrice = 1500m, CurrentStock = 45, MinimumStock = 10, TaxRate = 0.19m, CategoryId = 1, Category = categoryBebidas, ImageUrl = "🥤" },
-            new Product { Id = 3, Name = "Agua Cristal 600ml", SKU = "BEB003", Barcode = "7501234567892", SalePrice = 2000m, PurchasePrice = 1000m, CurrentStock = 100, MinimumStock = 20, TaxRate = 0.19m, CategoryId = 1, Category = categoryBebidas, ImageUrl = "💧" },
-            new Product { Id = 4, Name = "Sandwich de Pollo", SKU = "ALI001", Barcode = "7501234567893", SalePrice = 8500m, PurchasePrice = 4000m, CurrentStock = 20, MinimumStock = 5, TaxRate = 0.19m, CategoryId = 2, Category = categoryAlimentos, ImageUrl = "🥪" },
-            new Product { Id = 5, Name = "Hamburguesa Clásica", SKU = "ALI002", Barcode = "7501234567894", SalePrice = 12000m, PurchasePrice = 6000m, CurrentStock = 15, MinimumStock = 5, TaxRate = 0.19m, CategoryId = 2, Category = categoryAlimentos, ImageUrl = "🍔" },
-            new Product { Id = 6, Name = "Pizza Personal", SKU = "ALI003", Barcode = "7501234567895", SalePrice = 15000m, PurchasePrice = 7500m, CurrentStock = 10, MinimumStock = 3, TaxRate = 0.19m, CategoryId = 2, Category = categoryAlimentos, ImageUrl = "🍕" },
-            new Product { Id = 7, Name = "Papas Margarita", SKU = "SNK001", Barcode = "7501234567896", SalePrice = 4500m, PurchasePrice = 2500m, CurrentStock = 60, MinimumStock = 15, TaxRate = 0.19m, CategoryId = 3, Category = categorySnacks, ImageUrl = "🍟" },
-            new Product { Id = 8, Name = "Galletas Festival", SKU = "SNK002", Barcode = "7501234567897", SalePrice = 5000m, PurchasePrice = 2800m, CurrentStock = 40, MinimumStock = 10, TaxRate = 0.19m, CategoryId = 3, Category = categorySnacks, ImageUrl = "🍪" },
-            new Product { Id = 9, Name = "Chocolate Jet", SKU = "SNK003", Barcode = "7501234567898", SalePrice = 2500m, PurchasePrice = 1500m, CurrentStock = 80, MinimumStock = 20, TaxRate = 0.19m, CategoryId = 3, Category = categorySnacks, ImageUrl = "🍫" }
-        };
+            var products = await _productService.GetAllProductsAsync(false);
+            _allProducts = new ObservableCollection<Product>(products);
+            ApplyFilters();
+        }
+        catch (Exception ex)
+        {
+            System.Windows.MessageBox.Show(
+                $"Error al cargar productos: {ex.Message}",
+                "Error",
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Error);
+        }
     }
 }

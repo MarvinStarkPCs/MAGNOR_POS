@@ -326,7 +326,9 @@ public class PurchaseService
             { "Canceladas", await _context.Purchases.CountAsync(p => p.Status == PurchaseStatus.Cancelada) },
             { "TotalMes", await _context.Purchases
                 .Where(p => p.PurchaseDate.Month == DateTime.Now.Month && p.PurchaseDate.Year == DateTime.Now.Year)
-                .SumAsync(p => p.Total) }
+                .Select(p => p.Total)
+                .ToListAsync()
+                .ContinueWith(t => t.Result.Sum()) }
         };
 
         return stats;

@@ -1,5 +1,8 @@
 using System.Windows;
 using System.Windows.Input;
+using MAGNOR_POS.Data;
+using MAGNOR_POS.Services;
+using MAGNOR_POS.Views;
 
 namespace MAGNOR_POS.ViewModels;
 
@@ -20,6 +23,14 @@ public class SettingsViewModel : ViewModelBase
     private bool _requireCustomerOnSale = false;
     private bool _enableDiscounts = true;
 
+    // Business Type Configuration
+    private string _businessType = "Retail"; // Retail or Restaurant
+    private bool _enableRestaurantMode = false;
+    private bool _enableTableManagement = false;
+    private bool _enableKitchenOrders = false;
+    private bool _showProductIcons = true;
+    private string _defaultProductIcon = "📦";
+
     private string _statusMessage = string.Empty;
 
     public SettingsViewModel()
@@ -27,6 +38,7 @@ public class SettingsViewModel : ViewModelBase
         // Initialize commands
         SaveSettingsCommand = new RelayCommand(_ => SaveSettings());
         ResetSettingsCommand = new RelayCommand(_ => ResetSettings());
+        ConfigureTablesCommand = new RelayCommand(_ => ConfigureTables(), _ => EnableRestaurantMode);
 
         // Load settings
         LoadSettings();
@@ -156,12 +168,82 @@ public class SettingsViewModel : ViewModelBase
         }
     }
 
+    public string BusinessType
+    {
+        get => _businessType;
+        set
+        {
+            _businessType = value;
+            OnPropertyChanged(nameof(BusinessType));
+            OnPropertyChanged(nameof(IsRestaurantMode));
+
+            // Auto-enable restaurant features when switching to Restaurant mode
+            if (value == "Restaurant")
+            {
+                EnableRestaurantMode = true;
+            }
+        }
+    }
+
+    public bool IsRestaurantMode => _businessType == "Restaurant";
+
+    public bool EnableRestaurantMode
+    {
+        get => _enableRestaurantMode;
+        set
+        {
+            _enableRestaurantMode = value;
+            OnPropertyChanged(nameof(EnableRestaurantMode));
+        }
+    }
+
+    public bool EnableTableManagement
+    {
+        get => _enableTableManagement;
+        set
+        {
+            _enableTableManagement = value;
+            OnPropertyChanged(nameof(EnableTableManagement));
+        }
+    }
+
+    public bool EnableKitchenOrders
+    {
+        get => _enableKitchenOrders;
+        set
+        {
+            _enableKitchenOrders = value;
+            OnPropertyChanged(nameof(EnableKitchenOrders));
+        }
+    }
+
+    public bool ShowProductIcons
+    {
+        get => _showProductIcons;
+        set
+        {
+            _showProductIcons = value;
+            OnPropertyChanged(nameof(ShowProductIcons));
+        }
+    }
+
+    public string DefaultProductIcon
+    {
+        get => _defaultProductIcon;
+        set
+        {
+            _defaultProductIcon = value;
+            OnPropertyChanged(nameof(DefaultProductIcon));
+        }
+    }
+
     #endregion
 
     #region Commands
 
     public ICommand SaveSettingsCommand { get; }
     public ICommand ResetSettingsCommand { get; }
+    public ICommand ConfigureTablesCommand { get; }
 
     #endregion
 
@@ -224,9 +306,41 @@ public class SettingsViewModel : ViewModelBase
             EnableInventoryAlerts = true;
             RequireCustomerOnSale = false;
             EnableDiscounts = true;
+            BusinessType = "Retail";
+            EnableRestaurantMode = false;
+            EnableTableManagement = false;
+            EnableKitchenOrders = false;
+            ShowProductIcons = true;
+            DefaultProductIcon = "📦";
 
             StatusMessage = "Configuración restaurada a valores predeterminados";
             MessageBox.Show("La configuración ha sido restaurada.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private void ConfigureTables()
+    {
+        try
+        {
+            // Create database context and service
+            var context = new AppDbContext();
+            var restaurantService = new RestaurantService(context);
+
+            // Create ViewModel - using userId 1 (admin) as placeholder
+            var viewModel = new TableManagementViewModel(restaurantService, 1);
+
+            // Create and show window
+            var window = new TableManagementWindow
+            {
+                DataContext = viewModel
+            };
+
+            window.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al abrir la configuración de mesas: {ex.Message}", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

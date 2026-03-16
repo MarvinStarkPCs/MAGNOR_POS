@@ -63,6 +63,12 @@ namespace MAGNOR_POS
             UpdateMenuSelection(BtnReports);
         }
 
+        private void BtnUsers_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUsersView();
+            UpdateMenuSelection(BtnUsers);
+        }
+
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
             LoadSettingsView();
@@ -169,6 +175,27 @@ namespace MAGNOR_POS
             MainContent.Content = reportsView;
         }
 
+        private void LoadUsersView()
+        {
+            TitleText.Text = "Gestión de Usuarios y Roles";
+            SubtitleText.Text = "Administra los usuarios del sistema y asigna roles";
+
+            // Create database context and service
+            var context = new AppDbContext();
+            var userService = new UserService(context);
+
+            // Create ViewModel - using userId 1 (admin) as placeholder
+            var viewModel = new UsersViewModel(userService, 1);
+
+            // Create and configure view
+            var usersView = new UsersView
+            {
+                DataContext = viewModel
+            };
+
+            MainContent.Content = usersView;
+        }
+
         private void LoadSettingsView()
         {
             TitleText.Text = "Configuración del Sistema";
@@ -195,6 +222,7 @@ namespace MAGNOR_POS
             BtnPurchases.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
             BtnSuppliers.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
             BtnReports.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
+            BtnUsers.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
             BtnSettings.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#00000000"));
 
             // Highlight selected button

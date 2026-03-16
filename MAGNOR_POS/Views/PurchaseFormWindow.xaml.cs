@@ -15,6 +15,7 @@ public partial class PurchaseFormWindow : Window
 {
     private readonly PurchaseService _purchaseService;
     private readonly SupplierService _supplierService;
+    private readonly ProductService _productService;
     private readonly int _currentUserId;
     private readonly Purchase? _editingPurchase;
     private readonly bool _isEditMode;
@@ -32,9 +33,10 @@ public partial class PurchaseFormWindow : Window
         _editingPurchase = editingPurchase;
         _isEditMode = editingPurchase != null;
 
-        // Create supplier service with same context
+        // Create services with same context
         var context = new Data.AppDbContext();
         _supplierService = new SupplierService(context);
+        _productService = new ProductService(context);
 
         // Initialize DataGrid
         DetailsDataGrid.ItemsSource = _purchaseDetails;
@@ -56,9 +58,8 @@ public partial class PurchaseFormWindow : Window
             _availableSuppliers = (await _supplierService.GetAllSuppliersAsync(false)).ToList();
             SupplierComboBox.ItemsSource = _availableSuppliers;
 
-            // Load products (for now, create a simple list - you'll need a ProductService later)
-            // TODO: Replace with actual ProductService when implemented
-            _availableProducts = new List<Product>();
+            // Load products
+            _availableProducts = await _productService.GetAllProductsAsync(false);
             ProductComboBox.ItemsSource = _availableProducts;
 
             if (_isEditMode && _editingPurchase != null)

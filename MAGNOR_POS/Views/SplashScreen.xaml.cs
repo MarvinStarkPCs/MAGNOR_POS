@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using MAGNOR_POS.Services;
 
 namespace MAGNOR_POS.Views;
 
@@ -49,28 +50,70 @@ public partial class SplashScreen : Window
         {
             1 => "Iniciando aplicación...",
             2 => "Cargando base de datos...",
-            3 => "Configurando servicios...",
-            4 => "Preparando interfaz...",
-            5 => "Casi listo...",
+            3 => "Verificando licencia...",
+            4 => "Configurando servicios...",
+            5 => "Preparando interfaz...",
+            6 => "Casi listo...",
             _ => "Listo!"
         };
 
-        // After all steps, show login window
-        if (_progressStep >= 6)
+        // After all steps, validate license and proceed
+        if (_progressStep >= 7)
         {
             _timer?.Stop();
 
-            // Small delay before showing login
+            // Small delay before proceeding
             var closeTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(500)
             };
-            closeTimer.Tick += (s, args) =>
+            closeTimer.Tick += async (s, args) =>
             {
                 closeTimer.Stop();
-                ShowLoginWindow();
+                await ValidateLicenseAndProceed();
             };
             closeTimer.Start();
+        }
+    }
+
+    private async Task ValidateLicenseAndProceed()
+    {
+        // Verificar si hay licencia local
+        if (!LicenseService.HasLocalLicense())
+        {
+            // No hay licencia -> mostrar ventana de activación
+            ShowLicenseWindow();
+            return;
+        }
+
+        // Hay licencia local -> validar contra el servidor
+        var (isValid, message) = await LicenseService.ValidateLicenseAsync();
+
+        if (isValid)
+        {
+            ShowLoginWindow();
+        }
+        else
+        {
+            // Licencia inválida o expirada -> mostrar ventana de activación
+            MessageBox.Show(message, "Licencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+            ShowLicenseWindow();
+        }
+    }
+
+    private void ShowLicenseWindow()
+    {
+        var licenseWindow = new LicenseWindow();
+        this.Hide();
+        var result = licenseWindow.ShowDialog();
+
+        if (result == true && licenseWindow.IsLicenseActivated)
+        {
+            ShowLoginWindow();
+        }
+        else
+        {
+            Application.Current.Shutdown();
         }
     }
 

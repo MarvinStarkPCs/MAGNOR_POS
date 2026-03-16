@@ -14,7 +14,12 @@
       "Bash(dotnet run:*)",
       "Bash(tasklist:*)",
       "Bash(Stop-Process -Id 1764 -Force)",
-      "Bash(dotnet clean:*)"
+      "Bash(dotnet clean:*)",
+      "Bash(Stop-Process -Id 16144 -Force)",
+      "Bash(grep -v \".user$\")",
+      "Bash(ls ./publish/*.exe)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(\"C:/Users/MarvinStarkPCs/source/repos/MAGNOR_POS/.gitignore\")"
     ],
     "deny": [],
     "ask": []
