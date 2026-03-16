@@ -19,7 +19,15 @@
       "Bash(grep -v \".user$\")",
       "Bash(ls ./publish/*.exe)",
       "Bash(echo \"exit: $?\")",
-      "Bash(\"C:/Users/MarvinStarkPCs/source/repos/MAGNOR_POS/.gitignore\")"
+      "Bash(\"C:/Users/MarvinStarkPCs/source/repos/MAGNOR_POS/.gitignore\")",
+      "Bash(composer --version)",
+      "Bash(npm --version)",
+      "Bash(php --version)",
+      "Bash(composer create-project:*)",
+      "Bash(composer require:*)",
+      "Bash(php artisan:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)"
     ],
     "deny": [],
     "ask": []
