@@ -22,10 +22,9 @@ namespace MAGNOR_POS.Services
 
     public class LicenseService
     {
-        // ⚠️ CAMBIAR ESTA URL a tu dominio en cPanel
-        private const string API_BASE_URL = "https://tudominio.com/magnor-license/api";
-        private const string API_SECRET = "CAMBIAR_ESTA_CLAVE_SECRETA_AQUI";
-        private const int OFFLINE_GRACE_DAYS = 7; // Días permitidos sin validar online
+        private const string API_BASE_URL = "http://magnorposlicence.northcloud.com.co/api";
+        private const string API_SECRET = "MG2026-S3CR3T-K3Y-P0S";
+        // La licencia se verifica localmente sin necesidad de internet
 
         private static readonly HttpClient _httpClient = new()
         {
@@ -229,17 +228,20 @@ namespace MAGNOR_POS.Services
             }
             catch (Exception)
             {
-                // Sin conexión -> validar offline con gracia
-                var daysSinceValidation = (DateTime.Now - localLicense.LastValidated).TotalDays;
+                // Sin conexión -> validar localmente por fecha de expiración
+                if (localLicense.IsPermanent)
+                {
+                    return (true, "Licencia válida (permanente, modo offline)");
+                }
 
-                if (daysSinceValidation <= OFFLINE_GRACE_DAYS)
+                if (!localLicense.IsExpired)
                 {
-                    return (true, $"Licencia válida (modo offline, {OFFLINE_GRACE_DAYS - (int)daysSinceValidation} días restantes)");
+                    return (true, $"Licencia válida (modo offline, {localLicense.DaysLeft} días restantes)");
                 }
-                else
-                {
-                    return (false, "La licencia requiere validación en línea. Conéctese a internet e intente de nuevo.");
-                }
+
+                // Expirada localmente -> se desactiva sola sin internet
+                DeleteLicenseLocal();
+                return (false, $"Su licencia expiró el {localLicense.ExpiresAt:dd/MM/yyyy}. Contacte al administrador para renovarla.");
             }
         }
 

@@ -11,7 +11,7 @@ define('DB_USER', 'progr108_magnor_pos_licence');             // Cambiar al usua
 define('DB_PASS', 'kQ4#x)I#)S^L');                 // Cambiar a la contraseña de tu BD en cPanel
 
 // --- Clave secreta para autenticar requests de la app ---
-define('API_SECRET', 'CAMBIAR_ESTA_CLAVE_SECRETA_AQUI');
+define('API_SECRET', 'MG2026-S3CR3T-K3Y-P0S');
 
 // --- Configuración general ---
 define('LICENSE_PREFIX', 'MAGNOR');
