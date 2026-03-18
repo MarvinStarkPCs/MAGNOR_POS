@@ -3,6 +3,7 @@ using MAGNOR_POS.Data;
 using MAGNOR_POS.Models.Enums;
 using MAGNOR_POS.Models.Sales;
 using MAGNOR_POS.Models.Inventory;
+using MAGNOR_POS.ViewModels;
 
 namespace MAGNOR_POS.Services;
 
@@ -156,12 +157,64 @@ public class SalesService
                 await _context.Entry(detail).Reference(d => d.Product).LoadAsync();
             }
 
-            return (true, $"Venta {invoiceNumber} procesada exitosamente", sale);
+            // Load customer if exists
+            if (sale.CustomerId.HasValue)
+            {
+                await _context.Entry(sale).Reference(s => s.Customer).LoadAsync();
+            }
+
+            // Send electronic invoice via Factus (if enabled)
+            var factusMessage = await SendFactusInvoiceAsync(sale);
+
+            var message = $"Venta {invoiceNumber} procesada exitosamente";
+            if (!string.IsNullOrEmpty(factusMessage))
+            {
+                message += $"\n{factusMessage}";
+            }
+
+            return (true, message, sale);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
             return (false, $"Error al procesar la venta: {ex.Message}", null);
+        }
+    }
+
+    /// <summary>
+    /// Send electronic invoice to Factus (DIAN) if enabled
+    /// </summary>
+    private async Task<string> SendFactusInvoiceAsync(Sale sale)
+    {
+        try
+        {
+            var factusService = SettingsViewModel.CreateFactusService();
+
+            if (!factusService.IsEnabled)
+                return string.Empty;
+
+            var result = await factusService.CreateInvoiceAsync(sale);
+
+            if (result.Success)
+            {
+                // Save Factus data to Sale record
+                sale.FactusCUFE = result.CUFE;
+                sale.FactusQRCode = result.QRCode;
+                sale.FactusNumber = result.FactusNumber;
+                sale.FactusPrefix = result.FactusPrefix;
+                sale.FactusStatus = result.Status;
+                await _context.SaveChangesAsync();
+
+                return $"📄 Factura electrónica: {result.FactusPrefix}{result.FactusNumber}";
+            }
+            else
+            {
+                return $"⚠️ Factura electrónica falló: {result.Message}";
+            }
+        }
+        catch (Exception ex)
+        {
+            return $"⚠️ Error facturación electrónica: {ex.Message}";
         }
     }
 

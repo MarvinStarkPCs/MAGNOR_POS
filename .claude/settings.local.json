@@ -29,7 +29,9 @@
       "Bash(npm install:*)",
       "Bash(npx vite:*)",
       "Bash(composer install:*)",
-      "Bash(ls \"C:\\\\Users\\\\MarvinStarkPCs\\\\source\\\\repos\\\\MAGNOR_POS\\\\magnor-license\\\\app\\\\Models\\\\Backup\"\" 2>/dev/null || echo \"Directory not found \")"
+      "Bash(ls \"C:\\\\Users\\\\MarvinStarkPCs\\\\source\\\\repos\\\\MAGNOR_POS\\\\magnor-license\\\\app\\\\Models\\\\Backup\"\" 2>/dev/null || echo \"Directory not found \")",
+      "WebSearch",
+      "WebFetch(domain:developers.factus.com.co)"
     ],
     "deny": [],
     "ask": []

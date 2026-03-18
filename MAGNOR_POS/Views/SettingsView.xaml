@@ -259,6 +259,135 @@
                         </StackPanel>
                     </Border>
 
+                    <!-- Factus Electronic Invoicing Section -->
+                    <Border Background="#F0FDF4" BorderBrush="#22C55E" BorderThickness="2"
+                            CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="🧾 Facturación Electrónica (Factus / DIAN)"
+                                       FontSize="18" FontWeight="Bold"
+                                       Foreground="#146e39" Margin="0,0,0,5"/>
+                            <TextBlock Text="La configuración de facturación electrónica se gestiona desde el panel de licencias del servidor"
+                                       FontSize="12" Foreground="#4B5563" Margin="0,0,0,15"/>
+
+                            <!-- Status indicator -->
+                            <Border CornerRadius="8" Padding="15" Margin="0,0,0,10">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#FEF2F2"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding FactusEnabled}" Value="True">
+                                                <Setter Property="Background" Value="#F0FDF4"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock FontSize="16" Margin="0,0,8,0"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="🔴"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding FactusEnabled}" Value="True">
+                                                            <Setter Property="Text" Value="🟢"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock FontSize="15" FontWeight="Bold"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="Facturación Electrónica: DESHABILITADA"/>
+                                                    <Setter Property="Foreground" Value="#991B1B"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding FactusEnabled}" Value="True">
+                                                            <Setter Property="Text" Value="Facturación Electrónica: HABILITADA"/>
+                                                            <Setter Property="Foreground" Value="#166534"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <TextBlock Text="{Binding FactusStatusMessage}"
+                                               FontSize="12" Foreground="#4B5563" Margin="24,0,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Read-only info -->
+                            <Grid Margin="0,5,0,0"
+                                  Visibility="{Binding FactusEnabled, Converter={StaticResource BoolToVisibility}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Modo" Style="{StaticResource LabelStyle}"/>
+                                    <TextBlock FontSize="14" Margin="0,0,0,10"
+                                               Padding="10" Background="#F9FAFB">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="Producción (DIAN Real)"/>
+                                                <Setter Property="Foreground" Value="#DC2626"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding FactusUseSandbox}" Value="True">
+                                                        <Setter Property="Text" Value="Sandbox (Pruebas)"/>
+                                                        <Setter Property="Foreground" Value="#D97706"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <TextBlock Text="Usuario" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding FactusUsername, Mode=OneWay}"
+                                             IsReadOnly="True"
+                                             Style="{StaticResource TextBoxStyle}" Margin="0,0,0,10"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Client ID" Style="{StaticResource LabelStyle}"/>
+                                    <TextBox Text="{Binding FactusClientId, Mode=OneWay}"
+                                             IsReadOnly="True"
+                                             Style="{StaticResource TextBoxStyle}" Margin="0,0,0,10"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Test connection button -->
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0"
+                                        Visibility="{Binding FactusEnabled, Converter={StaticResource BoolToVisibility}}">
+                                <Button Content="🔌 Probar Conexión"
+                                        Command="{Binding TestFactusConnectionCommand}">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                            <Setter Property="Background" Value="#146e39"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#0F5C2E"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+
+                            <Border Background="#ECFDF5" CornerRadius="6" Padding="10" Margin="0,15,0,0">
+                                <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="#065F46">
+                                    <Run Text="Nota:" FontWeight="Bold"/>
+                                    La facturación electrónica se configura desde el panel de administración
+                                    del servidor de licencias. Contacta al administrador para activar o
+                                    modificar la configuración de Factus para esta licencia.
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
                     <!-- System Information Section -->
                     <TextBlock Text="ℹ️ Información del Sistema" Style="{StaticResource SectionTitleStyle}"/>
 

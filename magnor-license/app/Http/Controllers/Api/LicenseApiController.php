@@ -71,6 +71,14 @@ class LicenseApiController extends Controller
                 'expires_at' => $license->expires_at?->toISOString(),
                 'is_permanent' => $license->duration_days === 0,
             ],
+            'factus' => [
+                'enabled' => (bool) $license->factus_enabled,
+                'sandbox' => (bool) $license->factus_sandbox,
+                'client_id' => $license->factus_client_id,
+                'client_secret' => $license->factus_client_secret,
+                'username' => $license->factus_username,
+                'password' => $license->factus_password,
+            ],
         ]);
     }
 
@@ -133,6 +141,14 @@ class LicenseApiController extends Controller
                 'expires_at' => $license->expires_at?->toISOString(),
                 'days_left' => $license->days_left,
                 'is_permanent' => $license->duration_days === 0,
+            ],
+            'factus' => [
+                'enabled' => (bool) $license->factus_enabled,
+                'sandbox' => (bool) $license->factus_sandbox,
+                'client_id' => $license->factus_client_id,
+                'client_secret' => $license->factus_client_secret,
+                'username' => $license->factus_username,
+                'password' => $license->factus_password,
             ],
         ]);
     }

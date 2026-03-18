@@ -43,6 +43,11 @@ class DashboardController extends Controller
             'expired' => $allLicenses->where('status', 'expired')->count(),
         ];
 
+        // Make factus fields visible for dashboard (but not secrets)
+        $licenses->each(function ($license) {
+            $license->makeVisible(['factus_enabled', 'factus_sandbox', 'factus_client_id', 'factus_username']);
+        });
+
         return Inertia::render('Dashboard', [
             'licenses' => $licenses,
             'stats' => $stats,
@@ -113,6 +118,39 @@ class DashboardController extends Controller
         }
 
         $license->save();
+
+        return redirect()->route('dashboard');
+    }
+
+    public function updateFactus(Request $request, $id)
+    {
+        $request->validate([
+            'factus_enabled' => 'required|boolean',
+            'factus_sandbox' => 'required|boolean',
+            'factus_client_id' => 'nullable|string|max:255',
+            'factus_client_secret' => 'nullable|string|max:255',
+            'factus_username' => 'nullable|string|max:255',
+            'factus_password' => 'nullable|string|max:255',
+        ]);
+
+        $license = License::findOrFail($id);
+
+        $data = [
+            'factus_enabled' => $request->factus_enabled,
+            'factus_sandbox' => $request->factus_sandbox,
+            'factus_client_id' => $request->factus_client_id,
+            'factus_username' => $request->factus_username,
+        ];
+
+        // Only update secrets if provided (non-empty)
+        if ($request->filled('factus_client_secret')) {
+            $data['factus_client_secret'] = $request->factus_client_secret;
+        }
+        if ($request->filled('factus_password')) {
+            $data['factus_password'] = $request->factus_password;
+        }
+
+        $license->update($data);
 
         return redirect()->route('dashboard');
     }

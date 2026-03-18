@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/licenses/{id}/toggle', [DashboardController::class, 'toggle'])->name('licenses.toggle');
     Route::post('/licenses/{id}/unbind', [DashboardController::class, 'unbind'])->name('licenses.unbind');
     Route::post('/licenses/{id}/renew', [DashboardController::class, 'renew'])->name('licenses.renew');
+    Route::post('/licenses/{id}/factus', [DashboardController::class, 'updateFactus'])->name('licenses.factus');
     Route::delete('/licenses/{id}', [DashboardController::class, 'destroy'])->name('licenses.destroy');
     Route::post('/logout', [DashboardController::class, 'logout'])->name('logout');
     Route::get('/backup', [BackupViewController::class, 'index'])->name('backup.index');

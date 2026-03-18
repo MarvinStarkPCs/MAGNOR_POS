@@ -18,6 +18,14 @@ namespace MAGNOR_POS.Services
         public bool IsPermanent => ExpiresAt == null;
         public bool IsExpired => ExpiresAt != null && DateTime.Now > ExpiresAt;
         public int? DaysLeft => ExpiresAt != null ? Math.Max(0, (int)Math.Ceiling((ExpiresAt.Value - DateTime.Now).TotalDays)) : null;
+
+        // Factus electronic invoicing config (from server)
+        public bool FactusEnabled { get; set; }
+        public bool FactusSandbox { get; set; } = true;
+        public string FactusClientId { get; set; } = string.Empty;
+        public string FactusClientSecret { get; set; } = string.Empty;
+        public string FactusUsername { get; set; } = string.Empty;
+        public string FactusPassword { get; set; } = string.Empty;
     }
 
     public class LicenseService
@@ -147,6 +155,10 @@ namespace MAGNOR_POS.Services
                         ExpiresAt = expiresAt,
                         LastValidated = DateTime.Now
                     };
+
+                    // Parse Factus config from server response
+                    ParseFactusConfig(result, licenseInfo);
+
                     SaveLicenseLocal(licenseInfo);
                 }
 
@@ -224,6 +236,9 @@ namespace MAGNOR_POS.Services
                             localLicense.ExpiresAt = parsed;
                     }
 
+                    // Update Factus config from server
+                    ParseFactusConfig(result, localLicense);
+
                     SaveLicenseLocal(localLicense);
 
                     // Mensaje con días restantes
@@ -275,6 +290,27 @@ namespace MAGNOR_POS.Services
         public static LicenseInfo? GetLocalLicense()
         {
             return LoadLicenseLocal();
+        }
+
+        /// <summary>
+        /// Parse Factus config from API JSON response
+        /// </summary>
+        private static void ParseFactusConfig(JsonElement result, LicenseInfo info)
+        {
+            if (result.TryGetProperty("factus", out var factus))
+            {
+                info.FactusEnabled = factus.TryGetProperty("enabled", out var en) && en.GetBoolean();
+                info.FactusSandbox = !factus.TryGetProperty("sandbox", out var sb) || sb.GetBoolean();
+
+                if (factus.TryGetProperty("client_id", out var cid) && cid.ValueKind == JsonValueKind.String)
+                    info.FactusClientId = cid.GetString() ?? "";
+                if (factus.TryGetProperty("client_secret", out var cs) && cs.ValueKind == JsonValueKind.String)
+                    info.FactusClientSecret = cs.GetString() ?? "";
+                if (factus.TryGetProperty("username", out var un) && un.ValueKind == JsonValueKind.String)
+                    info.FactusUsername = un.GetString() ?? "";
+                if (factus.TryGetProperty("password", out var pw) && pw.ValueKind == JsonValueKind.String)
+                    info.FactusPassword = pw.GetString() ?? "";
+            }
         }
 
         // --- Persistencia local ---

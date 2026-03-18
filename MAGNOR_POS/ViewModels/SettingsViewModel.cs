@@ -31,6 +31,15 @@ public class SettingsViewModel : ViewModelBase
     private bool _showProductIcons = true;
     private string _defaultProductIcon = "📦";
 
+    // Factus Electronic Invoicing
+    private bool _factusEnabled = false;
+    private bool _factusUseSandbox = true;
+    private string _factusClientId = string.Empty;
+    private string _factusClientSecret = string.Empty;
+    private string _factusUsername = string.Empty;
+    private string _factusPassword = string.Empty;
+    private string _factusStatusMessage = string.Empty;
+
     private string _statusMessage = string.Empty;
 
     public SettingsViewModel()
@@ -39,6 +48,7 @@ public class SettingsViewModel : ViewModelBase
         SaveSettingsCommand = new RelayCommand(_ => SaveSettings());
         ResetSettingsCommand = new RelayCommand(_ => ResetSettings());
         ConfigureTablesCommand = new RelayCommand(_ => ConfigureTables(), _ => EnableRestaurantMode);
+        TestFactusConnectionCommand = new RelayCommand(async _ => await TestFactusConnectionAsync());
 
         // Load settings
         LoadSettings();
@@ -237,6 +247,49 @@ public class SettingsViewModel : ViewModelBase
         }
     }
 
+    // Factus Properties
+    public bool FactusEnabled
+    {
+        get => _factusEnabled;
+        set { _factusEnabled = value; OnPropertyChanged(nameof(FactusEnabled)); }
+    }
+
+    public bool FactusUseSandbox
+    {
+        get => _factusUseSandbox;
+        set { _factusUseSandbox = value; OnPropertyChanged(nameof(FactusUseSandbox)); }
+    }
+
+    public string FactusClientId
+    {
+        get => _factusClientId;
+        set { _factusClientId = value; OnPropertyChanged(nameof(FactusClientId)); }
+    }
+
+    public string FactusClientSecret
+    {
+        get => _factusClientSecret;
+        set { _factusClientSecret = value; OnPropertyChanged(nameof(FactusClientSecret)); }
+    }
+
+    public string FactusUsername
+    {
+        get => _factusUsername;
+        set { _factusUsername = value; OnPropertyChanged(nameof(FactusUsername)); }
+    }
+
+    public string FactusPassword
+    {
+        get => _factusPassword;
+        set { _factusPassword = value; OnPropertyChanged(nameof(FactusPassword)); }
+    }
+
+    public string FactusStatusMessage
+    {
+        get => _factusStatusMessage;
+        set { _factusStatusMessage = value; OnPropertyChanged(nameof(FactusStatusMessage)); }
+    }
+
     #endregion
 
     #region Commands
@@ -244,6 +297,7 @@ public class SettingsViewModel : ViewModelBase
     public ICommand SaveSettingsCommand { get; }
     public ICommand ResetSettingsCommand { get; }
     public ICommand ConfigureTablesCommand { get; }
+    public ICommand TestFactusConnectionCommand { get; }
 
     #endregion
 
@@ -251,8 +305,29 @@ public class SettingsViewModel : ViewModelBase
 
     private void LoadSettings()
     {
-        // TODO: Load settings from database or configuration file
-        // For now, using default values
+        // Load Factus settings from license data (synced from server)
+        try
+        {
+            var license = LicenseService.GetLocalLicense();
+            if (license != null)
+            {
+                FactusEnabled = license.FactusEnabled;
+                FactusUseSandbox = license.FactusSandbox;
+                FactusClientId = license.FactusClientId;
+                FactusClientSecret = license.FactusClientSecret;
+                FactusUsername = license.FactusUsername;
+                FactusPassword = license.FactusPassword;
+
+                if (FactusEnabled)
+                {
+                    FactusStatusMessage = FactusUseSandbox
+                        ? "Modo Sandbox (configurado desde servidor)"
+                        : "Modo Producción (configurado desde servidor)";
+                }
+            }
+        }
+        catch { /* Use defaults */ }
+
         StatusMessage = "Configuración cargada";
     }
 
@@ -273,8 +348,6 @@ public class SettingsViewModel : ViewModelBase
                 MessageBox.Show("La tasa de impuesto debe estar entre 0% y 100%", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-
-            // TODO: Save settings to database or configuration file
 
             StatusMessage = "Configuración guardada exitosamente";
             MessageBox.Show("La configuración ha sido guardada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -315,6 +388,67 @@ public class SettingsViewModel : ViewModelBase
 
             StatusMessage = "Configuración restaurada a valores predeterminados";
             MessageBox.Show("La configuración ha sido restaurada.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    /// <summary>
+    /// Create FactusService from license data (synced from server)
+    /// </summary>
+    public static FactusService CreateFactusService()
+    {
+        var service = new FactusService();
+        try
+        {
+            var license = LicenseService.GetLocalLicense();
+            if (license != null)
+            {
+                service.IsEnabled = license.FactusEnabled;
+                service.UseSandbox = license.FactusSandbox;
+                service.ClientId = license.FactusClientId;
+                service.ClientSecret = license.FactusClientSecret;
+                service.Username = license.FactusUsername;
+                service.Password = license.FactusPassword;
+                service.BaseUrl = service.UseSandbox
+                    ? "https://api-sandbox.factus.com.co"
+                    : "https://api.factus.com.co";
+            }
+        }
+        catch { /* Use defaults */ }
+        return service;
+    }
+
+    private async Task TestFactusConnectionAsync()
+    {
+        try
+        {
+            FactusStatusMessage = "Probando conexión...";
+
+            var factusService = new FactusService
+            {
+                ClientId = FactusClientId,
+                ClientSecret = FactusClientSecret,
+                Username = FactusUsername,
+                Password = FactusPassword,
+                UseSandbox = FactusUseSandbox
+            };
+
+            var (success, message) = await factusService.TestConnectionAsync();
+
+            FactusStatusMessage = message;
+
+            if (success)
+            {
+                MessageBox.Show("Conexión exitosa con Factus API.", "Factus", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Error: {message}", "Factus", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            FactusStatusMessage = $"Error: {ex.Message}";
+            MessageBox.Show($"Error al conectar con Factus: {ex.Message}", "Factus", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -17,6 +17,12 @@ class License extends Model
         'is_active',
         'activated_at',
         'expires_at',
+        'factus_enabled',
+        'factus_sandbox',
+        'factus_client_id',
+        'factus_client_secret',
+        'factus_username',
+        'factus_password',
     ];
 
     protected $casts = [
@@ -24,6 +30,13 @@ class License extends Model
         'activated_at' => 'datetime',
         'expires_at' => 'datetime',
         'duration_days' => 'integer',
+        'factus_enabled' => 'boolean',
+        'factus_sandbox' => 'boolean',
+    ];
+
+    protected $hidden = [
+        'factus_client_secret',
+        'factus_password',
     ];
 
     protected $appends = ['status', 'days_left'];

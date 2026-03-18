@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { router, useForm, Head, usePage } from '@inertiajs/react';
 
 const STATUS_LABELS = {
@@ -44,6 +44,15 @@ export default function Dashboard({ licenses, stats, currentFilter }) {
     const [showCreate, setShowCreate] = useState(false);
     const [renewId, setRenewId] = useState(null);
     const [renewDays, setRenewDays] = useState(30);
+    const [factusId, setFactusId] = useState(null);
+    const [factusForm, setFactusForm] = useState({
+        factus_enabled: false,
+        factus_sandbox: true,
+        factus_client_id: '',
+        factus_client_secret: '',
+        factus_username: '',
+        factus_password: '',
+    });
 
     const createForm = useForm({
         customer_name: '',
@@ -84,6 +93,24 @@ export default function Dashboard({ licenses, stats, currentFilter }) {
     const handleRenew = (id) => {
         router.post(`/licenses/${id}/renew`, { duration_days: renewDays }, {
             onSuccess: () => setRenewId(null),
+        });
+    };
+
+    const openFactusConfig = (lic) => {
+        setFactusId(lic.id);
+        setFactusForm({
+            factus_enabled: lic.factus_enabled || false,
+            factus_sandbox: lic.factus_sandbox !== undefined ? lic.factus_sandbox : true,
+            factus_client_id: lic.factus_client_id || '',
+            factus_client_secret: '',
+            factus_username: lic.factus_username || '',
+            factus_password: '',
+        });
+    };
+
+    const handleFactusSave = (id) => {
+        router.post(`/licenses/${id}/factus`, factusForm, {
+            onSuccess: () => setFactusId(null),
         });
     };
 
@@ -240,19 +267,21 @@ export default function Dashboard({ licenses, stats, currentFilter }) {
                                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Activada</th>
                                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Expira</th>
                                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Creada</th>
+                                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Factus</th>
                                         <th className="text-left px-4 py-3 font-semibold text-gray-600">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {licenses.length === 0 && (
                                         <tr>
-                                            <td colSpan="8" className="text-center py-8 text-gray-400">
+                                            <td colSpan="9" className="text-center py-8 text-gray-400">
                                                 No se encontraron licencias.
                                             </td>
                                         </tr>
                                     )}
                                     {licenses.map((lic) => (
-                                        <tr key={lic.id} className="hover:bg-gray-50 transition">
+                                        <React.Fragment key={lic.id}>
+                                        <tr className="hover:bg-gray-50 transition">
                                             <td className="px-4 py-3 font-mono text-xs text-blue-800 font-medium">
                                                 {lic.license_key}
                                             </td>
@@ -294,6 +323,14 @@ export default function Dashboard({ licenses, stats, currentFilter }) {
                                             </td>
                                             <td className="px-4 py-3 text-xs text-gray-500">
                                                 {formatDate(lic.created_at)}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <button
+                                                    onClick={() => openFactusConfig(lic)}
+                                                    className={'px-2 py-1 rounded text-xs font-medium transition cursor-pointer ' + (lic.factus_enabled ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500')}
+                                                >
+                                                    {lic.factus_enabled ? 'Activo' : 'No'}
+                                                </button>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex flex-wrap items-center gap-1">
@@ -367,6 +404,95 @@ export default function Dashboard({ licenses, stats, currentFilter }) {
                                                 </div>
                                             </td>
                                         </tr>
+                                        {factusId === lic.id && (
+                                            <tr>
+                                                <td colSpan="9" className="px-4 py-4 bg-green-50 border-b border-green-200">
+                                                    <div className="max-w-3xl">
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <h3 className="text-sm font-bold text-[#146e39]">Configuracion Factus - {lic.license_key}</h3>
+                                                            <button onClick={() => setFactusId(null)} className="text-gray-400 hover:text-gray-600 cursor-pointer text-lg">&times;</button>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-3 mb-3">
+                                                            <label className="flex items-center gap-2 text-sm">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={factusForm.factus_enabled}
+                                                                    onChange={(e) => setFactusForm({...factusForm, factus_enabled: e.target.checked})}
+                                                                    className="rounded"
+                                                                />
+                                                                Facturacion electronica habilitada
+                                                            </label>
+                                                            <label className="flex items-center gap-2 text-sm">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={factusForm.factus_sandbox}
+                                                                    onChange={(e) => setFactusForm({...factusForm, factus_sandbox: e.target.checked})}
+                                                                    className="rounded"
+                                                                />
+                                                                Modo Sandbox (pruebas)
+                                                            </label>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-3 mb-3">
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 mb-1">Client ID</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={factusForm.factus_client_id}
+                                                                    onChange={(e) => setFactusForm({...factusForm, factus_client_id: e.target.value})}
+                                                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-green-500 outline-none"
+                                                                    placeholder="Client ID de Factus"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 mb-1">Client Secret</label>
+                                                                <input
+                                                                    type="password"
+                                                                    value={factusForm.factus_client_secret}
+                                                                    onChange={(e) => setFactusForm({...factusForm, factus_client_secret: e.target.value})}
+                                                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-green-500 outline-none"
+                                                                    placeholder="Dejar vacio para no cambiar"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 mb-1">Usuario (Email)</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={factusForm.factus_username}
+                                                                    onChange={(e) => setFactusForm({...factusForm, factus_username: e.target.value})}
+                                                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-green-500 outline-none"
+                                                                    placeholder="Email de Factus"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 mb-1">Contrasena</label>
+                                                                <input
+                                                                    type="password"
+                                                                    value={factusForm.factus_password}
+                                                                    onChange={(e) => setFactusForm({...factusForm, factus_password: e.target.value})}
+                                                                    className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-green-500 outline-none"
+                                                                    placeholder="Dejar vacio para no cambiar"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => handleFactusSave(lic.id)}
+                                                                className="px-4 py-1.5 bg-[#146e39] hover:bg-green-800 text-white text-sm font-medium rounded transition cursor-pointer"
+                                                            >
+                                                                Guardar Factus
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setFactusId(null)}
+                                                                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded transition cursor-pointer"
+                                                            >
+                                                                Cancelar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                        </React.Fragment>
                                     ))}
                                 </tbody>
                             </table>

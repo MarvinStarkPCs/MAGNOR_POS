@@ -26,6 +26,13 @@ public class Sale : BaseEntity
     // References
     public string? Notes { get; set; }
 
+    // Factus Electronic Invoice (DIAN)
+    public string? FactusCUFE { get; set; }
+    public string? FactusQRCode { get; set; }
+    public string? FactusNumber { get; set; }
+    public string? FactusPrefix { get; set; }
+    public string? FactusStatus { get; set; }
+
     // Foreign keys
     public int? CustomerId { get; set; }
     public int UserId { get; set; }
