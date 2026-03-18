@@ -92,6 +92,11 @@ public class BackupService
                     sale_date = s.SaleDate.ToString("yyyy-MM-dd HH:mm:ss"),
                     cashier_name = s.User != null ? s.User.FullName : "Admin",
                     notes = s.Notes ?? "",
+                    factus_cufe = s.FactusCUFE ?? "",
+                    factus_qr_code = s.FactusQRCode ?? "",
+                    factus_number = s.FactusNumber ?? "",
+                    factus_prefix = s.FactusPrefix ?? "",
+                    factus_status = s.FactusStatus ?? "",
                     details = s.Details.Select(d => new
                     {
                         local_id = d.Id,

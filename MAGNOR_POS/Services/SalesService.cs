@@ -163,16 +163,7 @@ public class SalesService
                 await _context.Entry(sale).Reference(s => s.Customer).LoadAsync();
             }
 
-            // Send electronic invoice via Factus (if enabled)
-            var factusMessage = await SendFactusInvoiceAsync(sale);
-
-            var message = $"Venta {invoiceNumber} procesada exitosamente";
-            if (!string.IsNullOrEmpty(factusMessage))
-            {
-                message += $"\n{factusMessage}";
-            }
-
-            return (true, message, sale);
+            return (true, $"Venta {invoiceNumber} procesada exitosamente", sale);
         }
         catch (Exception ex)
         {
@@ -182,9 +173,9 @@ public class SalesService
     }
 
     /// <summary>
-    /// Send electronic invoice to Factus (DIAN) if enabled
+    /// Send electronic invoice to Factus (DIAN)
     /// </summary>
-    private async Task<string> SendFactusInvoiceAsync(Sale sale)
+    public async Task<string> SendFactusInvoiceAsync(Sale sale)
     {
         try
         {

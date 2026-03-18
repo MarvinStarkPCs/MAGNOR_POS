@@ -134,10 +134,16 @@ export default function Dashboard({ licenses, stats, currentFilter }) {
                         </h1>
                         <div className="flex items-center gap-3">
                             <button
+                                onClick={() => router.get('/invoices')}
+                                className="px-4 py-2 text-sm text-gray-600 hover:text-[#146e39] hover:bg-green-50 rounded-lg transition cursor-pointer font-medium"
+                            >
+                                Facturas
+                            </button>
+                            <button
                                 onClick={() => router.get('/backup')}
                                 className="px-4 py-2 text-sm text-gray-600 hover:text-[#146e39] hover:bg-green-50 rounded-lg transition cursor-pointer font-medium"
                             >
-                                ☁️ Backup
+                                Backup
                             </button>
                             <button
                                 onClick={() => router.post('/logout')}

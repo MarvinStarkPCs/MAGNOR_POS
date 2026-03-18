@@ -20,6 +20,11 @@ class BackupSale extends Model
         'sale_date',
         'cashier_name',
         'notes',
+        'factus_cufe',
+        'factus_qr_code',
+        'factus_number',
+        'factus_prefix',
+        'factus_status',
         'local_id',
         'synced_at',
     ];

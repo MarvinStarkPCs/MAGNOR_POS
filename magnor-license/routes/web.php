@@ -29,4 +29,5 @@ Route::middleware('auth')->group(function () {
     Route::delete('/licenses/{id}', [DashboardController::class, 'destroy'])->name('licenses.destroy');
     Route::post('/logout', [DashboardController::class, 'logout'])->name('logout');
     Route::get('/backup', [BackupViewController::class, 'index'])->name('backup.index');
+    Route::get('/invoices', [BackupViewController::class, 'invoices'])->name('invoices.index');
 });

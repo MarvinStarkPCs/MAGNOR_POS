@@ -132,7 +132,7 @@ public class POSViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al cargar productos: {ex.Message}",
+            CustomMessageBox.Show($"Error al cargar productos: {ex.Message}",
                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
@@ -167,7 +167,7 @@ public class POSViewModel : ViewModelBase
             if (product.TrackStock && !product.AllowNegativeStock &&
                 existingItem.Quantity + 1 > product.CurrentStock)
             {
-                MessageBox.Show($"Stock insuficiente. Disponible: {product.CurrentStock:N0}",
+                CustomMessageBox.Show($"Stock insuficiente. Disponible: {product.CurrentStock:N0}",
                     "Stock", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -177,7 +177,7 @@ public class POSViewModel : ViewModelBase
         {
             if (product.TrackStock && !product.AllowNegativeStock && product.CurrentStock <= 0)
             {
-                MessageBox.Show($"Producto sin stock disponible.",
+                CustomMessageBox.Show($"Producto sin stock disponible.",
                     "Stock", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -209,7 +209,7 @@ public class POSViewModel : ViewModelBase
             if (cartItem.Product.TrackStock && !cartItem.Product.AllowNegativeStock &&
                 cartItem.Quantity + 1 > cartItem.Product.CurrentStock)
             {
-                MessageBox.Show($"Stock insuficiente. Disponible: {cartItem.Product.CurrentStock:N0}",
+                CustomMessageBox.Show($"Stock insuficiente. Disponible: {cartItem.Product.CurrentStock:N0}",
                     "Stock", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -275,6 +275,32 @@ public class POSViewModel : ViewModelBase
 
         if (success && sale != null)
         {
+            // Ask if they want electronic invoice (only if Factus is enabled)
+            try
+            {
+                var factusService = SettingsViewModel.CreateFactusService();
+                if (factusService.IsEnabled)
+                {
+                    var factusResult = CustomMessageBox.Show(
+                        "¿Desea generar factura electrónica (DIAN) para esta venta?",
+                        "Factura Electrónica",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question,
+                        MessageBoxResult.No); // Default = No
+
+                    if (factusResult == MessageBoxResult.Yes)
+                    {
+                        var factusMessage = await _salesService.SendFactusInvoiceAsync(sale);
+                        if (!string.IsNullOrEmpty(factusMessage))
+                        {
+                            CustomMessageBox.Show(factusMessage, "Facturación Electrónica",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+                }
+            }
+            catch { /* Factus errors should not block the sale */ }
+
             // Show receipt window
             var receiptWindow = new ReceiptWindow(sale)
             {
@@ -289,7 +315,7 @@ public class POSViewModel : ViewModelBase
         }
         else
         {
-            MessageBox.Show(message, "Error en la venta",
+            CustomMessageBox.Show(message, "Error en la venta",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -301,7 +327,7 @@ public class POSViewModel : ViewModelBase
 
     private void ClearCart(object? parameter)
     {
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             "Esta seguro que desea limpiar el carrito?",
             "Confirmar",
             MessageBoxButton.YesNo,

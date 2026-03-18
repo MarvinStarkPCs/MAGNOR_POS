@@ -6,7 +6,8 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        Width="500" Height="620"
+        Width="500" SizeToContent="Height"
+        MaxHeight="700"
         ResizeMode="NoResize">
 
     <Window.Resources>
@@ -69,11 +70,13 @@
     </Window.Resources>
 
     <Border Background="White" CornerRadius="15" Margin="10"
-            BorderBrush="#146e39" BorderThickness="2">
+            BorderBrush="#146e39" BorderThickness="2"
+            MouseLeftButtonDown="Border_MouseLeftButtonDown">
         <Border.Effect>
             <DropShadowEffect Color="#000000" BlurRadius="15" Opacity="0.3" ShadowDepth="3"/>
         </Border.Effect>
 
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid Margin="25">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -285,5 +288,6 @@
                 </Button>
             </Grid>
         </Grid>
+        </ScrollViewer>
     </Border>
 </Window>

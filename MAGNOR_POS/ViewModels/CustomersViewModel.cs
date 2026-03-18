@@ -134,7 +134,7 @@ public class CustomersViewModel : ViewModelBase
         catch (Exception ex)
         {
             StatusMessage = $"Error al cargar clientes: {ex.Message}";
-            MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -157,7 +157,7 @@ public class CustomersViewModel : ViewModelBase
         catch (Exception ex)
         {
             StatusMessage = $"Error en búsqueda: {ex.Message}";
-            MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -203,7 +203,7 @@ public class CustomersViewModel : ViewModelBase
     {
         if (SelectedCustomer == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea eliminar el cliente {SelectedCustomer.FullName}?\n\nEsta acción no se puede deshacer.",
             "Confirmar Eliminación",
             MessageBoxButton.YesNo,
@@ -220,18 +220,18 @@ public class CustomersViewModel : ViewModelBase
 
                 if (success)
                 {
-                    MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     await LoadCustomersAsync();
                 }
                 else
                 {
-                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Error al eliminar: {ex.Message}";
-                MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -260,13 +260,13 @@ public class CustomersViewModel : ViewModelBase
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error: {ex.Message}";
-            MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

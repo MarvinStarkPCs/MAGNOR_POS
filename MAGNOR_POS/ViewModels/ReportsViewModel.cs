@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Input;
 using MAGNOR_POS.Services;
+using MAGNOR_POS.Views;
 
 namespace MAGNOR_POS.ViewModels;
 
@@ -238,7 +239,7 @@ public class ReportsViewModel : ViewModelBase
         catch (Exception ex)
         {
             StatusMessage = $"Error al cargar estadísticas: {ex.Message}";
-            MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

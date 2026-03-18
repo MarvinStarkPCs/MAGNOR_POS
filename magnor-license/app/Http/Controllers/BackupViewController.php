@@ -57,4 +57,35 @@ class BackupViewController extends Controller
             'backupData' => $backupData,
         ]);
     }
+
+    public function invoices(): Response
+    {
+        // Get all unique license keys with sales
+        $licenseKeys = BackupSale::distinct()->pluck('license_key')->sort()->values()->toArray();
+
+        // Get invoices per license
+        $invoiceData = [];
+        foreach ($licenseKeys as $key) {
+            $invoiceData[$key] = [
+                'invoices' => BackupSale::where('license_key', $key)
+                    ->with('details')
+                    ->orderByDesc('sale_date')
+                    ->get(),
+                'stats' => [
+                    'total_invoices' => BackupSale::where('license_key', $key)->count(),
+                    'factus_invoices' => BackupSale::where('license_key', $key)
+                        ->whereNotNull('factus_number')
+                        ->where('factus_number', '!=', '')
+                        ->count(),
+                    'total_revenue' => (float) BackupSale::where('license_key', $key)->sum('total'),
+                    'total_tax' => (float) BackupSale::where('license_key', $key)->sum('tax_amount'),
+                ],
+            ];
+        }
+
+        return Inertia::render('Invoices/Index', [
+            'licenseKeys' => $licenseKeys,
+            'invoiceData' => $invoiceData,
+        ]);
+    }
 }

@@ -32,7 +32,8 @@
       "Bash(ls \"C:\\\\Users\\\\MarvinStarkPCs\\\\source\\\\repos\\\\MAGNOR_POS\\\\magnor-license\\\\app\\\\Models\\\\Backup\"\" 2>/dev/null || echo \"Directory not found \")",
       "WebSearch",
       "WebFetch(domain:developers.factus.com.co)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(find /c/Users/MarvinStarkPCs/source/repos/MAGNOR_POS -type f -name *backup* -o -name *Backup*)"
     ],
     "deny": [],
     "ask": []

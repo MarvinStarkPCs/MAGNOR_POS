@@ -83,7 +83,7 @@ public partial class CustomerFormWindow : Window
         // Validate required fields
         if (string.IsNullOrWhiteSpace(FullNameTextBox.Text))
         {
-            MessageBox.Show("El nombre completo es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El nombre completo es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             FullNameTextBox.Focus();
             return;
         }
@@ -91,14 +91,14 @@ public partial class CustomerFormWindow : Window
         // Validate numeric fields
         if (!decimal.TryParse(DiscountTextBox.Text, out decimal discount) || discount < 0 || discount > 100)
         {
-            MessageBox.Show("El descuento debe ser un número entre 0 y 100", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El descuento debe ser un número entre 0 y 100", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             DiscountTextBox.Focus();
             return;
         }
 
         if (!decimal.TryParse(CreditLimitTextBox.Text, out decimal creditLimit) || creditLimit < 0)
         {
-            MessageBox.Show("El límite de crédito debe ser un número mayor o igual a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El límite de crédito debe ser un número mayor o igual a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             CreditLimitTextBox.Focus();
             return;
         }
@@ -116,7 +116,7 @@ public partial class CustomerFormWindow : Window
             }
             catch
             {
-                MessageBox.Show("El email no tiene un formato válido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show("El email no tiene un formato válido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 EmailTextBox.Focus();
                 return;
             }
@@ -167,12 +167,12 @@ public partial class CustomerFormWindow : Window
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show($"Error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

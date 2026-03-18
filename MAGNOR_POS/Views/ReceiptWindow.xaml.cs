@@ -33,12 +33,12 @@ public partial class ReceiptWindow : Window
         try
         {
             _printService.PrintReceipt(_sale);
-            MessageBox.Show("Factura enviada a la impresora.",
+            CustomMessageBox.Show("Factura enviada a la impresora.",
                 "Impresion", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al imprimir: {ex.Message}",
+            CustomMessageBox.Show($"Error al imprimir: {ex.Message}",
                 "Error de impresion", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

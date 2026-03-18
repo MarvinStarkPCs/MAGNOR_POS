@@ -198,7 +198,7 @@ public class ProductsViewModel : ViewModelBase
     {
         if (SelectedProduct == null) return;
 
-        var result = System.Windows.MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea eliminar el producto '{SelectedProduct.Name}'?",
             "Confirmar Eliminación",
             System.Windows.MessageBoxButton.YesNo,
@@ -211,11 +211,11 @@ public class ProductsViewModel : ViewModelBase
             if (success)
             {
                 await LoadProductsAsync();
-                System.Windows.MessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                CustomMessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
             else
             {
-                System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }
     }
@@ -225,7 +225,7 @@ public class ProductsViewModel : ViewModelBase
         // Validate
         if (string.IsNullOrWhiteSpace(FormName) || string.IsNullOrWhiteSpace(FormSKU))
         {
-            System.Windows.MessageBox.Show(
+            CustomMessageBox.Show(
                 "El nombre y SKU son obligatorios.",
                 "Error de Validación",
                 System.Windows.MessageBoxButton.OK,
@@ -236,7 +236,7 @@ public class ProductsViewModel : ViewModelBase
         // Parse numbers
         if (!decimal.TryParse(FormSalePrice.Replace(",", ""), out decimal salePrice))
         {
-            System.Windows.MessageBox.Show("Precio de venta inválido.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            CustomMessageBox.Show("Precio de venta inválido.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             return;
         }
 
@@ -278,12 +278,12 @@ public class ProductsViewModel : ViewModelBase
             if (success)
             {
                 await LoadProductsAsync();
-                System.Windows.MessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                CustomMessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 HideAddEditForm();
             }
             else
             {
-                System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }
         else
@@ -306,12 +306,12 @@ public class ProductsViewModel : ViewModelBase
                 if (success)
                 {
                     await LoadProductsAsync();
-                    System.Windows.MessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    CustomMessageBox.Show(message, "Éxito", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                     HideAddEditForm();
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    CustomMessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
         }
@@ -395,7 +395,7 @@ public class ProductsViewModel : ViewModelBase
 
         if (!decimal.TryParse(StockQuantity, out decimal quantity) || quantity <= 0)
         {
-            System.Windows.MessageBox.Show("Cantidad inválida.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            CustomMessageBox.Show("Cantidad inválida.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             return;
         }
 
@@ -408,7 +408,7 @@ public class ProductsViewModel : ViewModelBase
         {
             if (SelectedProduct.CurrentStock < quantity)
             {
-                System.Windows.MessageBox.Show("No hay suficiente stock disponible.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                CustomMessageBox.Show("No hay suficiente stock disponible.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 return;
             }
             newStock = SelectedProduct.CurrentStock - quantity;
@@ -419,7 +419,7 @@ public class ProductsViewModel : ViewModelBase
         if (success)
         {
             await LoadProductsAsync();
-            System.Windows.MessageBox.Show(
+            CustomMessageBox.Show(
                 $"{StockAdjustmentType} de {quantity} unidades registrada correctamente.\nStock actual: {newStock}",
                 "Éxito",
                 System.Windows.MessageBoxButton.OK,
@@ -428,7 +428,7 @@ public class ProductsViewModel : ViewModelBase
         }
         else
         {
-            System.Windows.MessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            CustomMessageBox.Show(message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
         }
     }
 
@@ -449,7 +449,7 @@ public class ProductsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            System.Windows.MessageBox.Show(
+            CustomMessageBox.Show(
                 $"Error al cargar productos: {ex.Message}",
                 "Error",
                 System.Windows.MessageBoxButton.OK,

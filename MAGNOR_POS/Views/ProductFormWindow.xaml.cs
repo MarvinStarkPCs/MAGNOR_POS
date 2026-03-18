@@ -65,7 +65,7 @@ public partial class ProductFormWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al cargar categorias: {ex.Message}",
+            CustomMessageBox.Show($"Error al cargar categorias: {ex.Message}",
                 "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -88,27 +88,27 @@ public partial class ProductFormWindow : Window
         // Validate
         if (string.IsNullOrWhiteSpace(TxtName.Text))
         {
-            MessageBox.Show("El nombre es obligatorio.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El nombre es obligatorio.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
             TxtName.Focus();
             return;
         }
 
         if (string.IsNullOrWhiteSpace(TxtSKU.Text))
         {
-            MessageBox.Show("El SKU es obligatorio.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El SKU es obligatorio.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
             TxtSKU.Focus();
             return;
         }
 
         if (CmbCategory.SelectedItem is not Category selectedCategory)
         {
-            MessageBox.Show("Seleccione una categoria.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("Seleccione una categoria.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         if (!decimal.TryParse(TxtSalePrice.Text.Replace(",", "").Replace(".", ""), out decimal salePrice) || salePrice <= 0)
         {
-            MessageBox.Show("Precio de venta invalido.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("Precio de venta invalido.", "Validacion", MessageBoxButton.OK, MessageBoxImage.Warning);
             TxtSalePrice.Focus();
             return;
         }
@@ -142,7 +142,7 @@ public partial class ProductFormWindow : Window
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         else
@@ -173,7 +173,7 @@ public partial class ProductFormWindow : Window
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

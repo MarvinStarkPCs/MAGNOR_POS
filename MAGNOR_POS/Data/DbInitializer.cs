@@ -11,6 +11,9 @@ public static class DbInitializer
         // Create database if it doesn't exist (DO NOT delete existing data)
         context.Database.EnsureCreated();
 
+        // Apply schema updates for existing databases
+        ApplySchemaUpdates(context);
+
         // Check if we already have users
         if (context.Users.Any())
         {
@@ -278,5 +281,48 @@ public static class DbInitializer
 
         context.Products.AddRange(products);
         context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Applies schema updates to existing databases (adds missing columns)
+    /// </summary>
+    private static void ApplySchemaUpdates(AppDbContext context)
+    {
+        var connection = context.Database.GetDbConnection();
+        connection.Open();
+
+        // Define columns to add if missing: (table, column, type, default)
+        var columnsToAdd = new List<(string table, string column, string type, string defaultVal)>
+        {
+            // Factus columns for Sales table
+            ("Sales", "FactusCUFE", "TEXT", "NULL"),
+            ("Sales", "FactusQRCode", "TEXT", "NULL"),
+            ("Sales", "FactusNumber", "TEXT", "NULL"),
+            ("Sales", "FactusPrefix", "TEXT", "NULL"),
+            ("Sales", "FactusStatus", "TEXT", "NULL"),
+        };
+
+        foreach (var (table, column, type, defaultVal) in columnsToAdd)
+        {
+            try
+            {
+                using var checkCmd = connection.CreateCommand();
+                checkCmd.CommandText = $"SELECT COUNT(*) FROM pragma_table_info('{table}') WHERE name='{column}'";
+                var exists = Convert.ToInt64(checkCmd.ExecuteScalar()) > 0;
+
+                if (!exists)
+                {
+                    using var alterCmd = connection.CreateCommand();
+                    alterCmd.CommandText = $"ALTER TABLE {table} ADD COLUMN {column} {type} DEFAULT {defaultVal}";
+                    alterCmd.ExecuteNonQuery();
+                }
+            }
+            catch
+            {
+                // Column might already exist or table doesn't exist yet, skip
+            }
+        }
+
+        connection.Close();
     }
 }

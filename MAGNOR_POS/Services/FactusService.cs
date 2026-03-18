@@ -132,11 +132,11 @@ public class FactusService
                 {
                     if (data.TryGetProperty("bill", out var bill))
                     {
-                        result.CUFE = bill.TryGetProperty("cufe", out var cufe) ? cufe.GetString() : null;
-                        result.QRCode = bill.TryGetProperty("qr_code", out var qr) ? qr.GetString() : null;
-                        result.FactusNumber = bill.TryGetProperty("number", out var num) ? num.GetString() : null;
-                        result.FactusPrefix = bill.TryGetProperty("prefix", out var prefix) ? prefix.GetString() : null;
-                        result.Status = bill.TryGetProperty("status", out var status) ? status.GetString() : null;
+                        result.CUFE = GetJsonString(bill, "cufe");
+                        result.QRCode = GetJsonString(bill, "qr_code");
+                        result.FactusNumber = GetJsonString(bill, "number");
+                        result.FactusPrefix = GetJsonString(bill, "prefix");
+                        result.Status = GetJsonString(bill, "status");
                     }
                 }
 
@@ -258,13 +258,32 @@ public class FactusService
             { "code_reference", detail.Product?.SKU ?? detail.ProductId.ToString() },
             { "name", detail.Product?.Name ?? $"Producto {detail.ProductId}" },
             { "quantity", (int)detail.Quantity },
-            { "price", Math.Round(priceWithTax, 2) },
-            { "tax_rate", Math.Round(detail.TaxRate * 100, 2).ToString("F2") }, // Convert 0.19 to "19.00"
-            { "discount_rate", Math.Round(detail.DiscountPercentage, 2).ToString("F2") },
+            { "price", (double)Math.Round(priceWithTax, 2) },
+            { "tax_rate", (double)Math.Round(detail.TaxRate * 100, 2) }, // Convert 0.19 to 19.00
+            { "discount_rate", (double)Math.Round(detail.DiscountPercentage, 2) },
             { "unit_measure_id", GetFactusUnitMeasureId(detail.Product?.UnitOfMeasure ?? UnitOfMeasure.Unidad) },
             { "standard_code_id", 1 }, // Standard adoption code
             { "is_excluded", 0 }, // Not IVA excluded
             { "tribute_id", 1 } // IVA
+        };
+    }
+
+    /// <summary>
+    /// Safely get a string value from a JsonElement property (handles both string and number types)
+    /// </summary>
+    private static string? GetJsonString(JsonElement element, string propertyName)
+    {
+        if (!element.TryGetProperty(propertyName, out var prop))
+            return null;
+
+        return prop.ValueKind switch
+        {
+            JsonValueKind.String => prop.GetString(),
+            JsonValueKind.Number => prop.GetRawText(),
+            JsonValueKind.True => "true",
+            JsonValueKind.False => "false",
+            JsonValueKind.Null => null,
+            _ => prop.GetRawText()
         };
     }
 

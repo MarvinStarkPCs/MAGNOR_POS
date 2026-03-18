@@ -81,7 +81,7 @@ public partial class PurchaseFormWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show($"Error al cargar datos: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -179,14 +179,14 @@ public partial class PurchaseFormWindow : Window
         // Validate product selection
         if (ProductComboBox.SelectedItem is not Product product)
         {
-            MessageBox.Show("Debe seleccionar un producto", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("Debe seleccionar un producto", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
         // Validate quantity
         if (!decimal.TryParse(QuantityTextBox.Text, out decimal quantity) || quantity <= 0)
         {
-            MessageBox.Show("La cantidad debe ser mayor a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("La cantidad debe ser mayor a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             QuantityTextBox.Focus();
             return;
         }
@@ -194,7 +194,7 @@ public partial class PurchaseFormWindow : Window
         // Validate unit cost
         if (!decimal.TryParse(UnitCostTextBox.Text, out decimal unitCost) || unitCost < 0)
         {
-            MessageBox.Show("El precio unitario debe ser mayor o igual a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El precio unitario debe ser mayor o igual a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             UnitCostTextBox.Focus();
             return;
         }
@@ -209,7 +209,7 @@ public partial class PurchaseFormWindow : Window
         var existingDetail = _purchaseDetails.FirstOrDefault(d => d.ProductId == product.Id);
         if (existingDetail != null)
         {
-            MessageBox.Show("Este producto ya está en la lista. Elimínelo primero si desea modificarlo.",
+            CustomMessageBox.Show("Este producto ya está en la lista. Elimínelo primero si desea modificarlo.",
                 "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -281,7 +281,7 @@ public partial class PurchaseFormWindow : Window
         // Validate supplier
         if (SupplierComboBox.SelectedValue == null)
         {
-            MessageBox.Show("Debe seleccionar un proveedor", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("Debe seleccionar un proveedor", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             SupplierComboBox.Focus();
             return;
         }
@@ -289,7 +289,7 @@ public partial class PurchaseFormWindow : Window
         // Validate purchase date
         if (!PurchaseDatePicker.SelectedDate.HasValue)
         {
-            MessageBox.Show("Debe seleccionar una fecha de compra", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("Debe seleccionar una fecha de compra", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             PurchaseDatePicker.Focus();
             return;
         }
@@ -297,7 +297,7 @@ public partial class PurchaseFormWindow : Window
         // Validate details
         if (_purchaseDetails.Count == 0)
         {
-            MessageBox.Show("Debe agregar al menos un producto a la compra", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("Debe agregar al menos un producto a la compra", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
 
@@ -374,18 +374,18 @@ public partial class PurchaseFormWindow : Window
 
             if (success)
             {
-                MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 DialogResult = true;
                 Close();
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show($"Error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

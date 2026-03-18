@@ -70,14 +70,14 @@ public partial class SupplierFormWindow : Window
         // Validate required fields
         if (string.IsNullOrWhiteSpace(CompanyNameTextBox.Text))
         {
-            MessageBox.Show("El nombre de la empresa es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El nombre de la empresa es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             CompanyNameTextBox.Focus();
             return;
         }
 
         if (string.IsNullOrWhiteSpace(ContactNameTextBox.Text))
         {
-            MessageBox.Show("El nombre del contacto es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El nombre del contacto es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             ContactNameTextBox.Focus();
             return;
         }
@@ -85,7 +85,7 @@ public partial class SupplierFormWindow : Window
         // Validate payment term days
         if (!int.TryParse(PaymentTermDaysTextBox.Text, out int paymentTermDays) || paymentTermDays < 0)
         {
-            MessageBox.Show("El plazo de pago debe ser un número mayor o igual a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+            CustomMessageBox.Show("El plazo de pago debe ser un número mayor o igual a 0", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
             PaymentTermDaysTextBox.Focus();
             return;
         }
@@ -103,7 +103,7 @@ public partial class SupplierFormWindow : Window
             }
             catch
             {
-                MessageBox.Show("El email no tiene un formato válido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show("El email no tiene un formato válido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 EmailTextBox.Focus();
                 return;
             }
@@ -152,12 +152,12 @@ public partial class SupplierFormWindow : Window
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show($"Error al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {

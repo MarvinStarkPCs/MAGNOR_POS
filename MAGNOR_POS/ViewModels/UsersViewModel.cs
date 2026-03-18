@@ -173,7 +173,7 @@ public class UsersViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al cargar usuarios: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al cargar usuarios: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
@@ -206,13 +206,13 @@ public class UsersViewModel : ViewModelBase
             if (window.ShowDialog() == true)
             {
                 _ = LoadUsersAsync();
-                MessageBox.Show("Usuario agregado exitosamente", "Éxito",
+                CustomMessageBox.Show("Usuario agregado exitosamente", "Éxito",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al abrir el formulario: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al abrir el formulario: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -227,13 +227,13 @@ public class UsersViewModel : ViewModelBase
             if (window.ShowDialog() == true)
             {
                 _ = LoadUsersAsync();
-                MessageBox.Show("Usuario actualizado exitosamente", "Éxito",
+                CustomMessageBox.Show("Usuario actualizado exitosamente", "Éxito",
                     MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al abrir el formulario: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al abrir el formulario: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -242,7 +242,7 @@ public class UsersViewModel : ViewModelBase
     {
         if (SelectedUser == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea desactivar al usuario '{SelectedUser.FullName}'?\n\n" +
             "El usuario no podrá iniciar sesión pero sus registros se conservarán.",
             "Confirmar Desactivación",
@@ -256,11 +256,11 @@ public class UsersViewModel : ViewModelBase
             if (success)
             {
                 await LoadUsersAsync();
-                MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
@@ -269,7 +269,7 @@ public class UsersViewModel : ViewModelBase
     {
         if (SelectedUser == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea restablecer la contraseña del usuario '{SelectedUser.FullName}'?\n\n" +
             "Se generará una contraseña temporal que deberá comunicarle al usuario.",
             "Confirmar Restablecimiento",
@@ -282,7 +282,7 @@ public class UsersViewModel : ViewModelBase
 
             if (success && tempPassword != null)
             {
-                MessageBox.Show(
+                CustomMessageBox.Show(
                     $"Contraseña restablecida exitosamente.\n\n" +
                     $"Contraseña temporal: {tempPassword}\n\n" +
                     "Asegúrese de comunicar esta contraseña al usuario de forma segura.",
@@ -292,7 +292,7 @@ public class UsersViewModel : ViewModelBase
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

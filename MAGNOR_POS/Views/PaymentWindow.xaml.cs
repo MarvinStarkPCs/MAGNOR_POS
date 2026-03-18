@@ -158,11 +158,17 @@ public partial class PaymentWindow : Window
     {
         if (AmountPaid < TotalAmount && SelectedPaymentType == PaymentType.Efectivo)
         {
-            MessageBox.Show("El monto recibido es insuficiente.",
+            CustomMessageBox.Show("El monto recibido es insuficiente.",
                 "Pago insuficiente", MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
 
         return true;
+    }
+
+    private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+            DragMove();
     }
 }

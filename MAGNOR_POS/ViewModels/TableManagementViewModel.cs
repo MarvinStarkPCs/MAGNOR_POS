@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using MAGNOR_POS.Models.Restaurant;
 using MAGNOR_POS.Services;
+using MAGNOR_POS.Views;
 
 namespace MAGNOR_POS.ViewModels;
 
@@ -171,7 +172,7 @@ public class TableManagementViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al cargar datos: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
@@ -195,7 +196,7 @@ public class TableManagementViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al cargar mesas: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al cargar mesas: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -239,11 +240,11 @@ public class TableManagementViewModel : ViewModelBase
         if (success && createdZone != null)
         {
             await LoadDataAsync();
-            MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         else
         {
-            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -271,11 +272,11 @@ public class TableManagementViewModel : ViewModelBase
         if (success)
         {
             await LoadDataAsync();
-            MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         else
         {
-            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -283,7 +284,7 @@ public class TableManagementViewModel : ViewModelBase
     {
         if (SelectedZone == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea eliminar la zona '{SelectedZone.Name}'?\n\n" +
             "Esta acción no se puede deshacer.",
             "Confirmar Eliminación",
@@ -297,11 +298,11 @@ public class TableManagementViewModel : ViewModelBase
             if (success)
             {
                 await LoadDataAsync();
-                MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
@@ -310,13 +311,13 @@ public class TableManagementViewModel : ViewModelBase
     {
         if (Zones.Count == 0)
         {
-            MessageBox.Show("Primero debe crear al menos una zona", "Información",
+            CustomMessageBox.Show("Primero debe crear al menos una zona", "Información",
                 MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
 
         // TODO: Open TableFormWindow
-        MessageBox.Show("Ventana de agregar mesa próximamente...", "Información",
+        CustomMessageBox.Show("Ventana de agregar mesa próximamente...", "Información",
             MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -325,7 +326,7 @@ public class TableManagementViewModel : ViewModelBase
         if (SelectedTable == null) return;
 
         // TODO: Open TableFormWindow for editing
-        MessageBox.Show("Ventana de editar mesa próximamente...", "Información",
+        CustomMessageBox.Show("Ventana de editar mesa próximamente...", "Información",
             MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
@@ -333,7 +334,7 @@ public class TableManagementViewModel : ViewModelBase
     {
         if (SelectedTable == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea eliminar la mesa '{SelectedTable.TableNumber}'?\n\n" +
             "Esta acción no se puede deshacer.",
             "Confirmar Eliminación",
@@ -347,11 +348,11 @@ public class TableManagementViewModel : ViewModelBase
             if (success)
             {
                 await LoadDataAsync();
-                MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

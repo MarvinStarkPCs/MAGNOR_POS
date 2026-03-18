@@ -139,7 +139,7 @@ public class PurchasesViewModel : ViewModelBase
         catch (Exception ex)
         {
             StatusMessage = $"Error al cargar compras: {ex.Message}";
-            MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -162,7 +162,7 @@ public class PurchasesViewModel : ViewModelBase
         catch (Exception ex)
         {
             StatusMessage = $"Error en búsqueda: {ex.Message}";
-            MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         finally
         {
@@ -192,7 +192,7 @@ public class PurchasesViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al abrir formulario: {ex.Message}\n\n{ex.StackTrace}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show($"Error al abrir formulario: {ex.Message}\n\n{ex.StackTrace}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -211,7 +211,7 @@ public class PurchasesViewModel : ViewModelBase
     {
         if (SelectedPurchase == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea recibir la compra {SelectedPurchase.PurchaseNumber}?\n\nEsto actualizará el inventario de productos.",
             "Confirmar Recepción",
             MessageBoxButton.YesNo,
@@ -228,18 +228,18 @@ public class PurchasesViewModel : ViewModelBase
 
                 if (success)
                 {
-                    MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     await LoadPurchasesAsync();
                 }
                 else
                 {
-                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Error al recibir: {ex.Message}";
-                MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -252,7 +252,7 @@ public class PurchasesViewModel : ViewModelBase
     {
         if (SelectedPurchase == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea cancelar la compra {SelectedPurchase.PurchaseNumber}?",
             "Confirmar Cancelación",
             MessageBoxButton.YesNo,
@@ -269,18 +269,18 @@ public class PurchasesViewModel : ViewModelBase
 
                 if (success)
                 {
-                    MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     await LoadPurchasesAsync();
                 }
                 else
                 {
-                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Error al cancelar: {ex.Message}";
-                MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -293,7 +293,7 @@ public class PurchasesViewModel : ViewModelBase
     {
         if (SelectedPurchase == null) return;
 
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             $"¿Está seguro que desea eliminar la compra {SelectedPurchase.PurchaseNumber}?\n\nEsta acción no se puede deshacer.",
             "Confirmar Eliminación",
             MessageBoxButton.YesNo,
@@ -310,18 +310,18 @@ public class PurchasesViewModel : ViewModelBase
 
                 if (success)
                 {
-                    MessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show(message, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                     await LoadPurchasesAsync();
                 }
                 else
                 {
-                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Error al eliminar: {ex.Message}";
-                MessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(StatusMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

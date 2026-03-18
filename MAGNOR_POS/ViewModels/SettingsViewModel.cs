@@ -338,30 +338,30 @@ public class SettingsViewModel : ViewModelBase
             // Validate company name
             if (string.IsNullOrWhiteSpace(CompanyName))
             {
-                MessageBox.Show("El nombre de la empresa es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show("El nombre de la empresa es requerido", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             // Validate tax rate
             if (DefaultTaxRate < 0 || DefaultTaxRate > 1)
             {
-                MessageBox.Show("La tasa de impuesto debe estar entre 0% y 100%", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show("La tasa de impuesto debe estar entre 0% y 100%", "Validación", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             StatusMessage = "Configuración guardada exitosamente";
-            MessageBox.Show("La configuración ha sido guardada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show("La configuración ha sido guardada correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error al guardar: {ex.Message}";
-            MessageBox.Show($"Error al guardar la configuración: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show($"Error al guardar la configuración: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
     private void ResetSettings()
     {
-        var result = MessageBox.Show(
+        var result = CustomMessageBox.Show(
             "¿Está seguro que desea restaurar la configuración a los valores predeterminados?",
             "Confirmar Reset",
             MessageBoxButton.YesNo,
@@ -387,7 +387,7 @@ public class SettingsViewModel : ViewModelBase
             DefaultProductIcon = "📦";
 
             StatusMessage = "Configuración restaurada a valores predeterminados";
-            MessageBox.Show("La configuración ha sido restaurada.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            CustomMessageBox.Show("La configuración ha sido restaurada.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 
@@ -438,17 +438,17 @@ public class SettingsViewModel : ViewModelBase
 
             if (success)
             {
-                MessageBox.Show("Conexión exitosa con Factus API.", "Factus", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Conexión exitosa con Factus API.", "Factus", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MessageBox.Show($"Error: {message}", "Factus", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show($"Error: {message}", "Factus", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
         catch (Exception ex)
         {
             FactusStatusMessage = $"Error: {ex.Message}";
-            MessageBox.Show($"Error al conectar con Factus: {ex.Message}", "Factus", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show($"Error al conectar con Factus: {ex.Message}", "Factus", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -473,7 +473,7 @@ public class SettingsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al abrir la configuración de mesas: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al abrir la configuración de mesas: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }

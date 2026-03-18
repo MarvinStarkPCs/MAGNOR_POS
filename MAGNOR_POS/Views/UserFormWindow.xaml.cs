@@ -60,7 +60,7 @@ public partial class UserFormWindow : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al cargar datos: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al cargar datos: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
@@ -90,7 +90,7 @@ public partial class UserFormWindow : Window
             // Validate required fields
             if (string.IsNullOrWhiteSpace(FullNameTextBox.Text))
             {
-                MessageBox.Show("El nombre completo es requerido", "Validación",
+                CustomMessageBox.Show("El nombre completo es requerido", "Validación",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 FullNameTextBox.Focus();
                 return;
@@ -98,7 +98,7 @@ public partial class UserFormWindow : Window
 
             if (string.IsNullOrWhiteSpace(UsernameTextBox.Text))
             {
-                MessageBox.Show("El nombre de usuario es requerido", "Validación",
+                CustomMessageBox.Show("El nombre de usuario es requerido", "Validación",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 UsernameTextBox.Focus();
                 return;
@@ -106,7 +106,7 @@ public partial class UserFormWindow : Window
 
             if (RoleComboBox.SelectedValue == null)
             {
-                MessageBox.Show("Debe seleccionar un rol", "Validación",
+                CustomMessageBox.Show("Debe seleccionar un rol", "Validación",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 RoleComboBox.Focus();
                 return;
@@ -119,7 +119,7 @@ public partial class UserFormWindow : Window
                 // New user - password is required
                 if (string.IsNullOrWhiteSpace(PasswordBox.Password))
                 {
-                    MessageBox.Show("La contraseña es requerida", "Validación",
+                    CustomMessageBox.Show("La contraseña es requerida", "Validación",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     PasswordBox.Focus();
                     return;
@@ -127,7 +127,7 @@ public partial class UserFormWindow : Window
 
                 if (PasswordBox.Password.Length < 6)
                 {
-                    MessageBox.Show("La contraseña debe tener al menos 6 caracteres", "Validación",
+                    CustomMessageBox.Show("La contraseña debe tener al menos 6 caracteres", "Validación",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     PasswordBox.Focus();
                     return;
@@ -135,7 +135,7 @@ public partial class UserFormWindow : Window
 
                 if (PasswordBox.Password != ConfirmPasswordBox.Password)
                 {
-                    MessageBox.Show("Las contraseñas no coinciden", "Validación",
+                    CustomMessageBox.Show("Las contraseñas no coinciden", "Validación",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     ConfirmPasswordBox.Focus();
                     return;
@@ -148,7 +148,7 @@ public partial class UserFormWindow : Window
                 // Editing user and wants to change password
                 if (string.IsNullOrWhiteSpace(PasswordBox.Password))
                 {
-                    MessageBox.Show("Ingrese la nueva contraseña", "Validación",
+                    CustomMessageBox.Show("Ingrese la nueva contraseña", "Validación",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     PasswordBox.Focus();
                     return;
@@ -156,7 +156,7 @@ public partial class UserFormWindow : Window
 
                 if (PasswordBox.Password.Length < 6)
                 {
-                    MessageBox.Show("La contraseña debe tener al menos 6 caracteres", "Validación",
+                    CustomMessageBox.Show("La contraseña debe tener al menos 6 caracteres", "Validación",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     PasswordBox.Focus();
                     return;
@@ -164,7 +164,7 @@ public partial class UserFormWindow : Window
 
                 if (PasswordBox.Password != ConfirmPasswordBox.Password)
                 {
-                    MessageBox.Show("Las contraseñas no coinciden", "Validación",
+                    CustomMessageBox.Show("Las contraseñas no coinciden", "Validación",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     ConfirmPasswordBox.Focus();
                     return;
@@ -192,7 +192,7 @@ public partial class UserFormWindow : Window
                 }
                 else
                 {
-                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -217,13 +217,13 @@ public partial class UserFormWindow : Window
                 }
                 else
                 {
-                    MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error al guardar el usuario: {ex.Message}", "Error",
+            CustomMessageBox.Show($"Error al guardar el usuario: {ex.Message}", "Error",
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
